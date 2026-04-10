@@ -1,13 +1,57 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model Recipe {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String?
+  imageUrl    String?
+  prepTime    Int?
+  cookTime    Int?
+  servings    Int?
+  category    String?
+  ingredients Ingredient[]
+  steps       Step[]
+  mealSlots   MealSlot[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Ingredient {
+  id       Int     @id @default(autoincrement())
+  name     String
+  amount   String
+  unit     String?
+  recipe   Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId Int
+}
+
+model Step {
+  id          Int    @id @default(autoincrement())
+  order       Int
+  instruction String
+  recipe      Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId    Int
+}
+
+model MealPlan {
+  id        Int        @id @default(autoincrement())
+  weekStart DateTime
+  slots     MealSlot[]
+  createdAt DateTime   @default(now())
+}
+
+model MealSlot {
+  id         Int      @id @default(autoincrement())
+  day        String
+  mealType   String
+  recipe     Recipe?  @relation(fields: [recipeId], references: [id])
+  recipeId   Int?
+  mealPlan   MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  mealPlanId Int
 }
