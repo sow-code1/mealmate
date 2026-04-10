@@ -1,0 +1,58 @@
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+
+export async function GET(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params
+        const recipe = await prisma.recipe.findUnique({
+            where: { id: parseInt(id) },
+            include: {
+                ingredients: true,
+                steps: { orderBy: { order: 'asc' } },
+            },
+        })
+        if (!recipe) {
+            return NextResponse.json({ error: 'Recipe not found' }, { status: 404 })
+        }
+        return NextResponse.json(recipe)
+    } catch (error) {
+        return NextResponse.json({ error: 'Failed to fetch recipe' }, { status: 500 })
+    }
+}
+
+export async function PUT(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params
+        const body = await request.json()
+        const { title, description, category, prepTime, cookTime, servings } = body
+
+        const recipe = await prisma.recipe.update({
+            where: { id: parseInt(id) },
+            data: { title, description, category, prepTime, cookTime, servings },
+        })
+        return NextResponse.json(recipe)
+    } catch (error) {
+        return NextResponse.json({ error: 'Failed to update recipe' }, { status: 500 })
+    }
+}
+
+export async function DELETE(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params
+        await prisma.recipe.delete({
+            where: { id: parseInt(id) },
+        })
+        return NextResponse.json({ message: 'Recipe deleted' })
+    } catch (error) {
+        return NextResponse.json({ error: 'Failed to delete recipe' }, { status: 500 })
+    }
+}
