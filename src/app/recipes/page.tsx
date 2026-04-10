@@ -1,8 +1,18 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 
+interface Recipe {
+    id: number
+    title: string
+    description: string | null
+    category: string | null
+    prepTime: number | null
+    cookTime: number | null
+    servings: number | null
+}
+
 export default async function RecipesPage() {
-    const recipes = await prisma.recipe.findMany({
+    const recipes: Recipe[] = await prisma.recipe.findMany({
         orderBy: { createdAt: 'desc' },
     })
 
@@ -19,13 +29,13 @@ export default async function RecipesPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {recipes.map((recipe) => (
+                {recipes.map((recipe: Recipe) => (
                     <Link href={`/recipes/${recipe.id}`} key={recipe.id}>
                         <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer">
                             <div className="flex items-center justify-between mb-2">
-                                <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
-                                    {recipe.category ?? 'Uncategorized'}
-                                </span>
+                <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                  {recipe.category ?? 'Uncategorized'}
+                </span>
                             </div>
                             <h2 className="text-lg font-semibold text-gray-900 mb-2">{recipe.title}</h2>
                             <p className="text-gray-500 text-sm mb-4 line-clamp-2">{recipe.description}</p>
