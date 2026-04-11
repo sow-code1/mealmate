@@ -2,20 +2,10 @@ export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
-import RecipeCard from '@/components/RecipeCard'
-
-interface Recipe {
-    id: number
-    title: string
-    description: string | null
-    category: string | null
-    prepTime: number | null
-    cookTime: number | null
-    servings: number | null
-}
+import RecipesBrowser from '@/components/RecipesBrowser'
 
 export default async function RecipesPage() {
-    const recipes: Recipe[] = await prisma.recipe.findMany({
+    const recipes = await prisma.recipe.findMany({
         orderBy: { createdAt: 'desc' },
     })
 
@@ -30,21 +20,7 @@ export default async function RecipesPage() {
                     + Add Recipe
                 </Link>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {recipes.map((recipe: Recipe) => (
-                    <RecipeCard
-                        key={recipe.id}
-                        id={recipe.id}
-                        title={recipe.title}
-                        description={recipe.description}
-                        category={recipe.category}
-                        prepTime={recipe.prepTime}
-                        cookTime={recipe.cookTime}
-                        servings={recipe.servings}
-                    />
-                ))}
-            </div>
+            <RecipesBrowser recipes={recipes} />
         </div>
     )
 }
