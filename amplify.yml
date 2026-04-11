@@ -15,3 +15,6 @@ frontend:
     paths:
       - .next/cache/**/*
       - .npm/**/*
+environmentVariables:
+  - DATABASE_URL: $DATABASE_URL
+  - NODE_TLS_REJECT_UNAUTHORIZED: "0"
