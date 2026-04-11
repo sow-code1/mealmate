@@ -1,0 +1,141 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+const MEAL_TYPES = ['Breakfast', 'Lunch', 'Dinner', 'Snack']
+
+interface Recipe {
+    id: number
+    title: string
+}
+
+interface Slot {
+    id: number
+    day: string
+    mealType: string
+    recipe: Recipe | null
+}
+
+interface MealPlan {
+    id: number
+    slots: Slot[]
+}
+
+export default function MealPlannerPage() {
+    const [mealPlan, setMealPlan] = useState<MealPlan | null>(null)
+    const [recipes, setRecipes] = useState<Recipe[]>([])
+    const [modal, setModal] = useState<{ day: string; mealType: string } | null>(null)
+
+    useEffect(() => {
+        fetch('/api/mealplan').then((r) => r.json()).then(setMealPlan)
+        fetch('/api/recipes').then((r) => r.json()).then(setRecipes)
+    }, [])
+
+    const getSlot = (day: string, mealType: string) =>
+        mealPlan?.slots.find((s) => s.day === day && s.mealType === mealType)
+
+    const assignRecipe = async (recipeId: number) => {
+        if (!modal || !mealPlan) return
+        const res = await fetch('/api/mealplan/slot', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ day: modal.day, mealType: modal.mealType, recipeId, mealPlanId: mealPlan.id }),
+        })
+        const newSlot = await res.json()
+        setMealPlan((prev) => {
+            if (!prev) return prev
+            const filtered = prev.slots.filter((s) => !(s.day === modal.day && s.mealType === modal.mealType))
+            return { ...prev, slots: [...filtered, newSlot] }
+        })
+        setModal(null)
+    }
+
+    const removeSlot = async (slotId: number) => {
+        await fetch(`/api/mealplan/slot/${slotId}`, { method: 'DELETE' })
+        setMealPlan((prev) => {
+            if (!prev) return prev
+            return { ...prev, slots: prev.slots.filter((s) => s.id !== slotId) }
+        })
+    }
+
+    if (!mealPlan) return <div className="max-w-6xl mx-auto px-6 py-12 text-gray-400">Loading...</div>
+
+    return (
+        <div className="max-w-6xl mx-auto px-6 py-12">
+            <div className="flex items-center justify-between mb-8">
+                <h1 className="text-3xl font-bold text-gray-900">Meal Planner</h1>
+                <a href="/grocery" className="bg-green-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                    View Grocery List
+                </a>
+            </div>
+
+            <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                    <thead>
+                    <tr>
+                        <th className="p-3 text-left text-sm font-medium text-gray-500 w-24">Meal</th>
+                        {DAYS.map((day) => (
+                            <th key={day} className="p-3 text-center text-sm font-medium text-gray-700">{day}</th>
+                        ))}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {MEAL_TYPES.map((mealType) => (
+                        <tr key={mealType} className="border-t border-gray-100">
+                            <td className="p-3 text-sm font-medium text-gray-500">{mealType}</td>
+                            {DAYS.map((day) => {
+                                const slot = getSlot(day, mealType)
+                                return (
+                                    <td key={day} className="p-2">
+                                        {slot?.recipe ? (
+                                            <div className="bg-green-50 border border-green-200 rounded-lg p-2 text-xs text-center">
+                                                <p className="font-medium text-green-800 mb-1">{slot.recipe.title}</p>
+                                                <button
+                                                    onClick={() => removeSlot(slot.id)}
+                                                    className="text-red-400 hover:text-red-600 text-xs"
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={() => setModal({ day, mealType })}
+                                                className="w-full h-16 border-2 border-dashed border-gray-200 rounded-lg text-gray-300 hover:border-green-400 hover:text-green-400 transition-colors text-xl"
+                                            >
+                                                +
+                                            </button>
+                                        )}
+                                    </td>
+                                )
+                            })}
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {modal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-xl p-6 w-96 max-h-96 overflow-y-auto">
+                        <h2 className="text-lg font-semibold mb-4">Pick a recipe for {modal.day} {modal.mealType}</h2>
+                        <div className="space-y-2">
+                            {recipes.map((recipe) => (
+                                <button
+                                    key={recipe.id}
+                                    onClick={() => assignRecipe(recipe.id)}
+                                    className="w-full text-left px-4 py-3 rounded-lg border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-colors text-sm"
+                                >
+                                    {recipe.title}
+                                </button>
+                            ))}
+                        </div>
+                        <button onClick={() => setModal(null)} className="mt-4 w-full py-2 text-sm text-gray-500 hover:text-gray-700">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+}
