@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
-
+//page to browse recipes
 interface Recipe {
     id: number
     title: string
