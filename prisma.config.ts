@@ -10,3 +10,7 @@ export default defineConfig({
     url: env('DATABASE_URL'),
   },
 })
+
+//prisma fectes the database url
+//and then tries to make a connection
+//however, database is facing some configuration issues

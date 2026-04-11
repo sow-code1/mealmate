@@ -1,7 +1,8 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
-
+import 'dotenv/config'
+console.log('DATABASE_URL:', process.env.DATABASE_URL)
 const globalForPrisma = globalThis as unknown as {
     prisma: PrismaClient | undefined
 }
