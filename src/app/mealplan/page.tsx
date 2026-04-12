@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import toast from 'react-hot-toast'
+import Spinner from '@/components/Spinner'
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 const MEAL_TYPES = ['Breakfast', 'Lunch', 'Dinner', 'Snack']
@@ -28,8 +30,14 @@ export default function MealPlannerPage() {
     const [modal, setModal] = useState<{ day: string; mealType: string } | null>(null)
 
     useEffect(() => {
-        fetch('/api/mealplan').then((r) => r.json()).then(setMealPlan)
-        fetch('/api/recipes').then((r) => r.json()).then(setRecipes)
+        fetch('/api/mealplan')
+            .then((r) => r.json())
+            .then(setMealPlan)
+            .catch(() => toast.error('Failed to load meal plan'))
+        fetch('/api/recipes')
+            .then((r) => r.json())
+            .then(setRecipes)
+            .catch(() => toast.error('Failed to load recipes'))
     }, [])
 
     const getSlot = (day: string, mealType: string) =>
@@ -37,29 +45,39 @@ export default function MealPlannerPage() {
 
     const assignRecipe = async (recipeId: number) => {
         if (!modal || !mealPlan) return
-        const res = await fetch('/api/mealplan/slot', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ day: modal.day, mealType: modal.mealType, recipeId, mealPlanId: mealPlan.id }),
-        })
-        const newSlot = await res.json()
-        setMealPlan((prev) => {
-            if (!prev) return prev
-            const filtered = prev.slots.filter((s) => !(s.day === modal.day && s.mealType === modal.mealType))
-            return { ...prev, slots: [...filtered, newSlot] }
-        })
+        try {
+            const res = await fetch('/api/mealplan/slot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ day: modal.day, mealType: modal.mealType, recipeId, mealPlanId: mealPlan.id }),
+            })
+            const newSlot = await res.json()
+            setMealPlan((prev) => {
+                if (!prev) return prev
+                const filtered = prev.slots.filter((s) => !(s.day === modal.day && s.mealType === modal.mealType))
+                return { ...prev, slots: [...filtered, newSlot] }
+            })
+            toast.success('Recipe added to plan')
+        } catch {
+            toast.error('Failed to assign recipe')
+        }
         setModal(null)
     }
 
     const removeSlot = async (slotId: number) => {
-        await fetch(`/api/mealplan/slot/${slotId}`, { method: 'DELETE' })
-        setMealPlan((prev) => {
-            if (!prev) return prev
-            return { ...prev, slots: prev.slots.filter((s) => s.id !== slotId) }
-        })
+        try {
+            await fetch(`/api/mealplan/slot/${slotId}`, { method: 'DELETE' })
+            setMealPlan((prev) => {
+                if (!prev) return prev
+                return { ...prev, slots: prev.slots.filter((s) => s.id !== slotId) }
+            })
+            toast.success('Recipe removed')
+        } catch {
+            toast.error('Failed to remove recipe')
+        }
     }
 
-    if (!mealPlan) return <div className="max-w-6xl mx-auto px-6 py-12 text-gray-400">Loading...</div>
+    if (!mealPlan) return <Spinner />
 
     return (
         <div className="max-w-6xl mx-auto px-6 py-12">

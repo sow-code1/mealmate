@@ -11,17 +11,28 @@ interface Recipe {
     prepTime: number | null
     cookTime: number | null
     servings: number | null
+    favorite: boolean
+    tags: string | null
 }
 
-const CATEGORIES = ['All', 'Breakfast', 'Lunch', 'Dinner', 'Snack', 'Dessert']
+const CATEGORIES = ['All', 'Favorites', 'Breakfast', 'Lunch', 'Dinner', 'Snack', 'Dessert']
 
-export default function RecipesBrowser({ recipes }: { recipes: Recipe[] }) {
+export default function RecipesBrowser({ recipes: initialRecipes }: { recipes: Recipe[] }) {
+    const [recipes, setRecipes] = useState(initialRecipes)
     const [search, setSearch] = useState('')
     const [activeCategory, setActiveCategory] = useState('All')
 
+    const handleFavoriteToggle = (id: number, newFavorite: boolean) => {
+        setRecipes((prev) =>
+            prev.map((r) => (r.id === id ? { ...r, favorite: newFavorite } : r))
+        )
+    }
+
     const filtered = recipes.filter((recipe) => {
         const matchesSearch = recipe.title.toLowerCase().includes(search.toLowerCase())
-        const matchesCategory = activeCategory === 'All' || recipe.category === activeCategory
+        const matchesCategory =
+            activeCategory === 'All' ||
+            (activeCategory === 'Favorites' ? recipe.favorite : recipe.category === activeCategory)
         return matchesSearch && matchesCategory
     })
 
@@ -48,7 +59,7 @@ export default function RecipesBrowser({ recipes }: { recipes: Recipe[] }) {
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         }`}
                     >
-                        {cat}
+                        {cat === 'Favorites' ? '❤️ Favorites' : cat}
                     </button>
                 ))}
             </div>
@@ -70,6 +81,9 @@ export default function RecipesBrowser({ recipes }: { recipes: Recipe[] }) {
                             prepTime={recipe.prepTime}
                             cookTime={recipe.cookTime}
                             servings={recipe.servings}
+                            favorite={recipe.favorite}
+                            tags={recipe.tags}
+                            onFavoriteToggle={handleFavoriteToggle}
                         />
                     ))}
                 </div>

@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import Spinner from '@/components/Spinner'
 
 interface Ingredient {
     id: number
@@ -25,6 +27,7 @@ interface Recipe {
     prepTime: number | null
     cookTime: number | null
     servings: number | null
+    tags: string | null
     ingredients: Ingredient[]
     steps: Step[]
 }
@@ -41,17 +44,26 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
             fetch(`/api/recipes/${id}`)
                 .then((r) => r.json())
                 .then(setRecipe)
+                .catch(() => toast.error('Failed to load recipe'))
         })
     }, [params])
 
     const handleDelete = async () => {
         if (!confirm('Delete this recipe?')) return
         setDeleting(true)
-        await fetch(`/api/recipes/${id}`, { method: 'DELETE' })
-        router.push('/recipes')
+        try {
+            await fetch(`/api/recipes/${id}`, { method: 'DELETE' })
+            toast.success('Recipe deleted')
+            router.push('/recipes')
+        } catch {
+            toast.error('Failed to delete recipe')
+            setDeleting(false)
+        }
     }
 
-    if (!recipe) return <div className="max-w-3xl mx-auto px-6 py-12 text-gray-400">Loading...</div>
+    if (!recipe) return <Spinner />
+
+    const tagList = recipe.tags ? recipe.tags.split(',').map((t) => t.trim()).filter(Boolean) : []
 
     return (
         <div className="max-w-3xl mx-auto px-6 py-12">
@@ -67,6 +79,15 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
             </span>
                         <h1 className="text-3xl font-bold text-gray-900 mt-3 mb-2">{recipe.title}</h1>
                         <p className="text-gray-500">{recipe.description}</p>
+                        {tagList.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-3">
+                                {tagList.map((tag) => (
+                                    <span key={tag} className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">
+                    {tag}
+                  </span>
+                                ))}
+                            </div>
+                        )}
                     </div>
                     <div className="flex gap-2 ml-4">
                         <Link

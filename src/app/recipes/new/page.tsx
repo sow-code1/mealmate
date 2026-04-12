@@ -1,7 +1,8 @@
 'use client'
-//page to create new recipes
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
 
 export default function NewRecipePage() {
     const router = useRouter()
@@ -13,11 +14,13 @@ export default function NewRecipePage() {
         prepTime: '',
         cookTime: '',
         servings: '',
+        tags: '',
     })
     const [ingredients, setIngredients] = useState([{ name: '', amount: '', unit: '' }])
     const [steps, setSteps] = useState([{ instruction: '' }])
 
     const handleSubmit = async () => {
+        if (!form.title) { toast.error('Title is required'); return }
         setLoading(true)
         try {
             await fetch('/api/recipes', {
@@ -32,9 +35,10 @@ export default function NewRecipePage() {
                     steps: steps.map((s, i) => ({ ...s, order: i + 1 })),
                 }),
             })
+            toast.success('Recipe created!')
             router.push('/recipes')
-        } catch (e) {
-            console.error(e)
+        } catch {
+            toast.error('Failed to create recipe')
         } finally {
             setLoading(false)
         }
@@ -100,6 +104,18 @@ export default function NewRecipePage() {
                             onChange={(e) => setForm({ ...form, cookTime: e.target.value })}
                         />
                     </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Dietary Tags <span className="text-gray-400 font-normal">(comma separated, e.g. vegetarian, gluten-free)</span>
+                    </label>
+                    <input
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                        placeholder="vegetarian, gluten-free, high-protein"
+                        value={form.tags}
+                        onChange={(e) => setForm({ ...form, tags: e.target.value })}
+                    />
                 </div>
 
                 <div>

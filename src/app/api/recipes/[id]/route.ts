@@ -30,11 +30,28 @@ export async function PUT(
     try {
         const { id } = await params
         const body = await request.json()
-        const { title, description, category, prepTime, cookTime, servings } = body
+        const { title, description, category, prepTime, cookTime, servings, tags, ingredients, steps } = body
+
+        await prisma.ingredient.deleteMany({ where: { recipeId: parseInt(id) } })
+        await prisma.step.deleteMany({ where: { recipeId: parseInt(id) } })
 
         const recipe = await prisma.recipe.update({
             where: { id: parseInt(id) },
-            data: { title, description, category, prepTime, cookTime, servings },
+            data: {
+                title,
+                description,
+                category,
+                prepTime,
+                cookTime,
+                servings,
+                tags,
+                ingredients: ingredients ? { create: ingredients } : undefined,
+                steps: steps ? { create: steps } : undefined,
+            },
+            include: {
+                ingredients: true,
+                steps: { orderBy: { order: 'asc' } },
+            },
         })
         return NextResponse.json(recipe)
     } catch (error) {
