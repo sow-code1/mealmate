@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
 import toast from 'react-hot-toast'
 import Spinner from '@/components/Spinner'
 
@@ -28,14 +29,17 @@ interface Recipe {
     cookTime: number | null
     servings: number | null
     tags: string | null
+    isPublic: boolean
+    userId: string | null
     ingredients: Ingredient[]
     steps: Step[]
 }
 
 export default function RecipeDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter()
+    const { data: session } = useSession()
     const [recipe, setRecipe] = useState<Recipe | null>(null)
-    const [deleting, setDeleting] = useState(false)
+    const [acting, setActing] = useState(false)
     const [id, setId] = useState<string | null>(null)
 
     useEffect(() => {
@@ -43,35 +47,43 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
             setId(id)
             fetch(`/api/recipes/${id}`)
                 .then((r) => {
-                    if (r.status === 401) {
-                        router.push('/login')
-                        return null
-                    }
+                    if (r.status === 401) { router.push('/login'); return null }
                     return r.json()
                 })
-                .then((data) => {
-                    if (data) setRecipe(data)
-                })
+                .then((data) => { if (data) setRecipe(data) })
                 .catch(() => toast.error('Failed to load recipe'))
         })
     }, [params])
 
-    const handleDelete = async () => {
+    const isOwner = recipe?.userId === session?.user?.id
+    // @ts-ignore
+    const isAdmin = session?.user?.isAdmin === true
+    const isPreset = recipe?.isPublic && !recipe?.userId
+
+    const handleAction = async () => {
         if (!confirm('Delete this recipe?')) return
-        setDeleting(true)
+        setActing(true)
         try {
-            await fetch(`/api/recipes/${id}`, { method: 'DELETE' })
-            toast.success('Recipe deleted')
-            router.push('/recipes')
+            if (isPreset) {
+                await fetch(`/api/recipes/${id}/hide`, { method: 'POST' })
+                toast.success('Recipe deleted')
+                router.push('/recipes')
+            } else {
+                await fetch(`/api/recipes/${id}`, { method: 'DELETE' })
+                toast.success('Recipe deleted')
+                router.push('/recipes')
+            }
         } catch {
             toast.error('Failed to delete recipe')
-            setDeleting(false)
+            setActing(false)
         }
     }
 
     if (!recipe) return <Spinner />
 
     const tagList = recipe.tags ? recipe.tags.split(',').map((t) => t.trim()).filter(Boolean) : []
+    const canEdit = isOwner || isAdmin
+    const canActOnRecipe = isOwner || isAdmin || (isPreset && !!session)
 
     return (
         <div className="max-w-3xl mx-auto px-6 py-12">
@@ -98,19 +110,23 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                         )}
                     </div>
                     <div className="flex gap-2 ml-4">
-                        <Link
-                            href={`/recipes/${id}/edit`}
-                            className="px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                            Edit
-                        </Link>
-                        <button
-                            onClick={handleDelete}
-                            disabled={deleting}
-                            className="px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
-                        >
-                            {deleting ? 'Deleting...' : 'Delete'}
-                        </button>
+                        {canEdit && (
+                            <Link
+                                href={`/recipes/${id}/edit`}
+                                className="px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                            >
+                                Edit
+                            </Link>
+                        )}
+                        {canActOnRecipe && (
+                            <button
+                                onClick={handleAction}
+                                disabled={acting}
+                                className="px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
+                            >
+                                {acting ? '...' : 'Delete'}
+                            </button>
+                        )}
                     </div>
                 </div>
 

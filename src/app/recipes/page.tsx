@@ -10,11 +10,21 @@ export default async function RecipesPage() {
     // @ts-ignore
     const isAdmin = session?.user?.isAdmin === true
 
+    const hiddenIds = session?.user?.id ? (await prisma.hiddenRecipe.findMany({
+        where: { userId: session.user.id },
+        select: { recipeId: true },
+    })).map((h) => h.recipeId) : []
+
     const recipes = await prisma.recipe.findMany({
         where: isAdmin ? {} : {
-            OR: [
-                { isPublic: true },
-                ...(session?.user?.id ? [{ userId: session.user.id }] : []),
+            AND: [
+                {
+                    OR: [
+                        { isPublic: true },
+                        ...(session?.user?.id ? [{ userId: session.user.id }] : []),
+                    ],
+                },
+                { id: { notIn: hiddenIds.length > 0 ? hiddenIds : [-1] } },
             ],
         },
         orderBy: { createdAt: 'desc' },
