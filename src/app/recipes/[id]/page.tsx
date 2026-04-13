@@ -31,6 +31,7 @@ interface Recipe {
     tags: string | null
     isPublic: boolean
     userId: string | null
+    user: { name: string | null; email: string | null } | null
     ingredients: Ingredient[]
     steps: Step[]
 }
@@ -84,6 +85,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
     const tagList = recipe.tags ? recipe.tags.split(',').map((t) => t.trim()).filter(Boolean) : []
     const canEdit = isOwner || isAdmin
     const canActOnRecipe = isOwner || isAdmin || (isPreset && !!session)
+    const addedBy = recipe.user?.name ?? recipe.user?.email ?? 'Unknown'
 
     return (
         <div className="max-w-3xl mx-auto px-6 py-12">
@@ -94,9 +96,21 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
             <div className="bg-white rounded-xl border border-gray-200 p-8">
                 <div className="flex items-start justify-between mb-6">
                     <div>
-            <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
-              {recipe.category ?? 'Uncategorized'}
-            </span>
+                        <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                {recipe.category ?? 'Uncategorized'}
+              </span>
+                            {isAdmin && recipe.userId && (
+                                <span className="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
+                  👤 Added by {addedBy}
+                </span>
+                            )}
+                            {isAdmin && isPreset && (
+                                <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                  🌐 Public preset
+                </span>
+                            )}
+                        </div>
                         <h1 className="text-3xl font-bold text-gray-900 mt-3 mb-2">{recipe.title}</h1>
                         <p className="text-gray-500">{recipe.description}</p>
                         {tagList.length > 0 && (

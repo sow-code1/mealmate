@@ -9,11 +9,14 @@ export default function Navbar() {
     const pathname = usePathname()
     const [menuOpen, setMenuOpen] = useState(false)
     const { data: session } = useSession()
+    // @ts-ignore
+    const isAdmin = session?.user?.isAdmin === true
 
     const links = [
         { href: '/recipes', label: 'Recipes' },
         { href: '/mealplan', label: 'Meal Planner' },
         { href: '/grocery', label: 'Grocery List' },
+        ...(isAdmin ? [{ href: '/admin/hidden', label: '⚙️ Admin' }] : []),
     ]
 
     return (
