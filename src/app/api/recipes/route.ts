@@ -1,9 +1,17 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { auth } from '@/auth'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
+        const session = await auth()
         const recipes = await prisma.recipe.findMany({
+            where: {
+                OR: [
+                    { isPublic: true },
+                    ...(session?.user?.id ? [{ userId: session.user.id }] : []),
+                ],
+            },
             orderBy: { createdAt: 'desc' },
         })
         return NextResponse.json(recipes)
@@ -13,8 +21,12 @@ export async function GET() {
     }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
+        const session = await auth()
+        if (!session?.user?.id) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
         const body = await request.json()
         const { title, description, category, prepTime, cookTime, servings, tags, ingredients, steps } = body
 
@@ -27,12 +39,10 @@ export async function POST(request: Request) {
                 cookTime,
                 servings,
                 tags,
-                ingredients: {
-                    create: ingredients ?? [],
-                },
-                steps: {
-                    create: steps ?? [],
-                },
+                userId: session.user.id,
+                isPublic: false,
+                ingredients: { create: ingredients ?? [] },
+                steps: { create: steps ?? [] },
             },
             include: {
                 ingredients: true,

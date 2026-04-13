@@ -42,8 +42,16 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
         params.then(({ id }) => {
             setId(id)
             fetch(`/api/recipes/${id}`)
-                .then((r) => r.json())
-                .then(setRecipe)
+                .then((r) => {
+                    if (r.status === 401) {
+                        router.push('/login')
+                        return null
+                    }
+                    return r.json()
+                })
+                .then((data) => {
+                    if (data) setRecipe(data)
+                })
                 .catch(() => toast.error('Failed to load recipe'))
         })
     }, [params])

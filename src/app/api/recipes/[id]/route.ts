@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { auth } from '@/auth'
 
 export async function GET(
     request: Request,
@@ -7,6 +8,10 @@ export async function GET(
 ) {
     try {
         const { id } = await params
+        const session = await auth()
+        // @ts-ignore
+        const isAdmin = session?.user?.isAdmin === true
+
         const recipe = await prisma.recipe.findUnique({
             where: { id: parseInt(id) },
             include: {
@@ -14,8 +19,9 @@ export async function GET(
                 steps: { orderBy: { order: 'asc' } },
             },
         })
-        if (!recipe) {
-            return NextResponse.json({ error: 'Recipe not found' }, { status: 404 })
+        if (!recipe) return NextResponse.json({ error: 'Recipe not found' }, { status: 404 })
+        if (!recipe.isPublic && recipe.userId !== session?.user?.id && !isAdmin) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
         return NextResponse.json(recipe)
     } catch (error) {
@@ -29,22 +35,27 @@ export async function PUT(
 ) {
     try {
         const { id } = await params
+        const session = await auth()
+        if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        // @ts-ignore
+        const isAdmin = session?.user?.isAdmin === true
+
+        const recipe = await prisma.recipe.findUnique({ where: { id: parseInt(id) } })
+        if (!recipe) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+        if (recipe.userId !== session.user.id && !isAdmin) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
         const body = await request.json()
         const { title, description, category, prepTime, cookTime, servings, tags, ingredients, steps } = body
 
         await prisma.ingredient.deleteMany({ where: { recipeId: parseInt(id) } })
         await prisma.step.deleteMany({ where: { recipeId: parseInt(id) } })
 
-        const recipe = await prisma.recipe.update({
+        const updated = await prisma.recipe.update({
             where: { id: parseInt(id) },
             data: {
-                title,
-                description,
-                category,
-                prepTime,
-                cookTime,
-                servings,
-                tags,
+                title, description, category, prepTime, cookTime, servings, tags,
                 ingredients: ingredients ? { create: ingredients } : undefined,
                 steps: steps ? { create: steps } : undefined,
             },
@@ -53,7 +64,7 @@ export async function PUT(
                 steps: { orderBy: { order: 'asc' } },
             },
         })
-        return NextResponse.json(recipe)
+        return NextResponse.json(updated)
     } catch (error) {
         return NextResponse.json({ error: 'Failed to update recipe' }, { status: 500 })
     }
@@ -65,9 +76,18 @@ export async function DELETE(
 ) {
     try {
         const { id } = await params
-        await prisma.recipe.delete({
-            where: { id: parseInt(id) },
-        })
+        const session = await auth()
+        if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        // @ts-ignore
+        const isAdmin = session?.user?.isAdmin === true
+
+        const recipe = await prisma.recipe.findUnique({ where: { id: parseInt(id) } })
+        if (!recipe) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+        if (recipe.userId !== session.user.id && !isAdmin) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
+        await prisma.recipe.delete({ where: { id: parseInt(id) } })
         return NextResponse.json({ message: 'Recipe deleted' })
     } catch (error) {
         return NextResponse.json({ error: 'Failed to delete recipe' }, { status: 500 })

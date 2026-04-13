@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { Toaster } from "react-hot-toast";
+import AuthSessionProvider from "@/components/SessionProvider";
 
 const geist = Geist({
     variable: "--font-geist-sans",
@@ -22,9 +23,11 @@ export default function RootLayout({
     return (
         <html lang="en" className={`${geist.variable} h-full antialiased`}>
         <body className="min-h-full flex flex-col bg-gray-50 text-gray-900">
-        <Navbar />
-        <Toaster position="top-right" />
-        <main className="flex-1">{children}</main>
+        <AuthSessionProvider>
+            <Navbar />
+            <Toaster position="top-right" />
+            <main className="flex-1">{children}</main>
+        </AuthSessionProvider>
         </body>
         </html>
     );
