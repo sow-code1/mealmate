@@ -64,7 +64,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
         if (!confirm('Delete this recipe?')) return
         setActing(true)
         try {
-            if (isPreset) {
+            if (isPreset && !isAdmin) {
                 await fetch(`/api/recipes/${id}/hide`, { method: 'POST' })
                 toast.success('Recipe deleted')
                 router.push('/recipes')
