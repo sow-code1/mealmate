@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { auth } from '@/auth'
 
 function getWeekStart() {
     const now = new Date()
@@ -12,6 +13,9 @@ function getWeekStart() {
 
 export async function GET() {
     try {
+        const session = await auth()
+        if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
         const weekStart = getWeekStart()
         const mealPlan = await prisma.mealPlan.findFirst({
             where: { weekStart },
@@ -23,15 +27,23 @@ export async function GET() {
                 },
             },
         })
+
         if (!mealPlan) return NextResponse.json([])
-        const ingredients: { name: string; amount: string; unit: string | null }[] = []
+
+        const ingredients: { name: string; amount: string; unit: string | null; recipeTitle: string }[] = []
         mealPlan.slots.forEach((slot) => {
             if (slot.recipe) {
                 slot.recipe.ingredients.forEach((ing) => {
-                    ingredients.push({ name: ing.name, amount: ing.amount, unit: ing.unit })
+                    ingredients.push({
+                        name: ing.name,
+                        amount: ing.amount,
+                        unit: ing.unit,
+                        recipeTitle: slot.recipe!.title,
+                    })
                 })
             }
         })
+
         return NextResponse.json(ingredients)
     } catch (error) {
         console.error(error)

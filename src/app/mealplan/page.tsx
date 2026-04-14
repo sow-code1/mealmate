@@ -30,14 +30,8 @@ export default function MealPlannerPage() {
     const [modal, setModal] = useState<{ day: string; mealType: string } | null>(null)
 
     useEffect(() => {
-        fetch('/api/mealplan')
-            .then((r) => r.json())
-            .then(setMealPlan)
-            .catch(() => toast.error('Failed to load meal plan'))
-        fetch('/api/recipes')
-            .then((r) => r.json())
-            .then(setRecipes)
-            .catch(() => toast.error('Failed to load recipes'))
+        fetch('/api/mealplan').then((r) => r.json()).then(setMealPlan).catch(() => toast.error('Failed to load meal plan'))
+        fetch('/api/recipes?mealplanner=true').then((r) => r.json()).then(setRecipes).catch(() => toast.error('Failed to load recipes'))
     }, [])
 
     const getSlot = (day: string, mealType: string) =>
@@ -134,10 +128,24 @@ export default function MealPlannerPage() {
             </div>
 
             {modal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-xl p-6 w-96 max-h-96 overflow-y-auto">
-                        <h2 className="text-lg font-semibold mb-4">Pick a recipe for {modal.day} {modal.mealType}</h2>
-                        <div className="space-y-2">
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                    onClick={() => setModal(null)}
+                >
+                    <div
+                        className="bg-white rounded-xl p-6 w-96 max-h-[80vh] flex flex-col"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-semibold">Pick a recipe for {modal.day} {modal.mealType}</h2>
+                            <button
+                                onClick={() => setModal(null)}
+                                className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className="overflow-y-auto flex-1 space-y-2">
                             {recipes.map((recipe) => (
                                 <button
                                     key={recipe.id}
@@ -148,7 +156,10 @@ export default function MealPlannerPage() {
                                 </button>
                             ))}
                         </div>
-                        <button onClick={() => setModal(null)} className="mt-4 w-full py-2 text-sm text-gray-500 hover:text-gray-700">
+                        <button
+                            onClick={() => setModal(null)}
+                            className="mt-4 w-full py-2 text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                        >
                             Cancel
                         </button>
                     </div>

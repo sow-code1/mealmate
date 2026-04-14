@@ -31,6 +31,7 @@ interface Recipe {
     tags: string | null
     isPublic: boolean
     userId: string | null
+    copiedFromPreset: boolean
     user: { name: string | null; email: string | null } | null
     ingredients: Ingredient[]
     steps: Step[]
@@ -49,6 +50,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
             fetch(`/api/recipes/${id}`)
                 .then((r) => {
                     if (r.status === 401) { router.push('/login'); return null }
+                    if (r.status === 404) { router.push('/recipes'); return null }
                     return r.json()
                 })
                 .then((data) => { if (data) setRecipe(data) })
@@ -100,13 +102,18 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
               <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
                 {recipe.category ?? 'Uncategorized'}
               </span>
-                            {isAdmin && recipe.userId && (
+                            {isAdmin && recipe.userId && !recipe.copiedFromPreset && (
                                 <span className="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
                   👤 Added by {addedBy}
                 </span>
                             )}
-                            {isAdmin && isPreset && (
+                            {isAdmin && recipe.copiedFromPreset && (
                                 <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                                    🌐 Public
+                                </span>
+                            )}
+                            {isAdmin && isPreset && (
+                                <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
                   🌐 Public preset
                 </span>
                             )}
@@ -153,7 +160,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                 <div className="mb-8">
                     <h2 className="text-xl font-semibold text-gray-900 mb-4">Ingredients</h2>
                     <ul className="space-y-2">
-                        {recipe.ingredients.map((ing) => (
+                        {recipe.ingredients?.map((ing) => (
                             <li key={ing.id} className="flex items-center gap-2 text-gray-700">
                                 <span className="w-2 h-2 bg-green-500 rounded-full inline-block"></span>
                                 {ing.amount} {ing.unit} {ing.name}
@@ -165,7 +172,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                 <div>
                     <h2 className="text-xl font-semibold text-gray-900 mb-4">Steps</h2>
                     <ol className="space-y-4">
-                        {recipe.steps.map((step) => (
+                        {recipe.steps?.map((step) => (
                             <li key={step.id} className="flex gap-4">
                 <span className="flex-shrink-0 w-7 h-7 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
                   {step.order}

@@ -5,12 +5,15 @@ import { auth } from '@/auth'
 export async function GET(request: NextRequest) {
     try {
         const session = await auth()
+        if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+        const isMealPlanner = request.nextUrl.searchParams.get('mealplanner') === 'true'
+
         const recipes = await prisma.recipe.findMany({
             where: {
-                OR: [
-                    { isPublic: true },
-                    ...(session?.user?.id ? [{ userId: session.user.id }] : []),
-                ],
+                userId: session.user.id,
+                deleted: false,
+                ...(isMealPlanner ? {} : { copiedFromPreset: false }),
             },
             orderBy: { createdAt: 'desc' },
         })
