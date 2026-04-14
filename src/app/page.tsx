@@ -1,6 +1,9 @@
 import Link from 'next/link'
+import { auth } from '@/auth'
 
-export default function Home() {
+export default async function Home() {
+    const session = await auth()
+
     return (
         <div>
             {/* Hero Section */}
@@ -13,13 +16,13 @@ export default function Home() {
                 </p>
                 <div className="flex gap-4 justify-center flex-wrap">
                     <Link
-                        href="/recipes"
+                        href={session ? '/recipes' : '/login'}
                         className="bg-green-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-green-700 transition-colors shadow-sm"
                     >
                         Browse Recipes
                     </Link>
                     <Link
-                        href="/mealplan"
+                        href={session ? '/mealplan' : '/login'}
                         className="bg-white text-green-600 border-2 border-green-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-green-50 transition-colors"
                     >
                         Plan My Week
@@ -52,13 +55,22 @@ export default function Home() {
             {/* CTA Section */}
             <div className="bg-green-600 px-6 py-16 text-center">
                 <h2 className="text-3xl font-bold text-white mb-4">Ready to start cooking?</h2>
-                <p className="text-green-100 mb-8 text-lg">Add your first recipe and start planning your week.</p>
-                <Link
-                    href="/recipes/new"
-                    className="bg-white text-green-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-green-50 transition-colors inline-block"
-                >
-                    + Add Your First Recipe
-                </Link>
+                <p className="text-green-100 mb-8 text-lg">Sign up free and start building your personal recipe collection.</p>
+                {session ? (
+                    <Link
+                        href="/recipes/new"
+                        className="bg-white text-green-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-green-50 transition-colors inline-block"
+                    >
+                        + Add Your First Recipe
+                    </Link>
+                ) : (
+                    <Link
+                        href="/register"
+                        className="bg-white text-green-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-green-50 transition-colors inline-block"
+                    >
+                        Create Free Account
+                    </Link>
+                )}
             </div>
         </div>
     )

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
+import AdminModeToggle from '@/components/AdminModeToggle'
 
 export default function Navbar() {
     const pathname = usePathname()
@@ -41,6 +42,7 @@ export default function Navbar() {
                             {label}
                         </Link>
                     ))}
+                    {isAdmin && <AdminModeToggle />}
                     {session ? (
                         <div className="flex items-center gap-3">
                             <span className="text-sm text-gray-500">{session.user?.name ?? session.user?.email}</span>
@@ -80,6 +82,7 @@ export default function Navbar() {
                             {label}
                         </Link>
                     ))}
+                    {isAdmin && <AdminModeToggle />}
                     {session ? (
                         <button
                             onClick={() => signOut({ callbackUrl: '/' })}

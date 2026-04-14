@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
+import DeleteUserButton from '@/components/DeleteUserButton'
 
 export default async function AdminUsersPage() {
     const session = await auth()
@@ -45,7 +46,10 @@ export default async function AdminUsersPage() {
                             </div>
                             <span className="text-sm text-gray-400">{user.email}</span>
                         </div>
-                        <span className="text-sm text-gray-400">{user._count.recipes} recipe{user._count.recipes !== 1 ? 's' : ''}</span>
+                        <span className="text-sm text-gray-400 mr-4">{user._count.recipes} recipe{user._count.recipes !== 1 ? 's' : ''}</span>
+                        {!user.isAdmin && (
+                            <DeleteUserButton userId={user.id} userName={user.name ?? user.email ?? 'this user'} />
+                        )}
                     </div>
                 ))}
             </div>
