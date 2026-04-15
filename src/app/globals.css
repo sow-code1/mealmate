@@ -1,19 +1,142 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 :root {
-  --background: #f9fafb;
-  --foreground: #111827;
+  --background: #faf9f6;
+  --foreground: #1c1917;
+  --card: #ffffff;
+  --card-border: #e8e4dc;
+  --muted: #78716c;
+  --muted-light: #f5f3ef;
+  --primary: #3d6b45;
+  --primary-hover: #2d5235;
+  --primary-light: #eef4ef;
+  --primary-text: #3d6b45;
+  --accent: #c8773a;
+  --accent-light: #fdf3eb;
+  --shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-md: 0 4px 16px rgba(28, 25, 23, 0.08), 0 2px 6px rgba(28, 25, 23, 0.04);
+  --shadow-lg: 0 8px 32px rgba(28, 25, 23, 0.10), 0 4px 12px rgba(28, 25, 23, 0.06);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: 'DM Sans', sans-serif;
+  --font-display: 'Playfair Display', serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+h1, h2, h3, h4 {
+  font-family: 'Playfair Display', serif;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* Utility classes using CSS variables */
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  display: inline-block;
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--primary);
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1.5px solid var(--primary);
+  transition: background 0.2s ease, transform 0.15s ease;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.btn-outline:hover {
+  background: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Subtle texture overlay on hero sections */
+.texture-overlay {
+  position: relative;
+}
+
+.texture-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233d6b45' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Page transition fade */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.5s ease forwards;
+}
+
+.animate-fade-up-delay-1 { animation-delay: 0.1s; opacity: 0; animation-fill-mode: forwards; animation-name: fadeUp; animation-duration: 0.5s; animation-timing-function: ease; }
+.animate-fade-up-delay-2 { animation-delay: 0.2s; opacity: 0; animation-fill-mode: forwards; animation-name: fadeUp; animation-duration: 0.5s; animation-timing-function: ease; }
+.animate-fade-up-delay-3 { animation-delay: 0.3s; opacity: 0; animation-fill-mode: forwards; animation-name: fadeUp; animation-duration: 0.5s; animation-timing-function: ease; }
+.animate-fade-up-delay-4 { animation-delay: 0.4s; opacity: 0; animation-fill-mode: forwards; animation-name: fadeUp; animation-duration: 0.5s; animation-timing-function: ease; }

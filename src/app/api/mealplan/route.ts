@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { auth } from '@/auth'
 
 function getWeekStart() {
     const now = new Date()
@@ -12,10 +13,13 @@ function getWeekStart() {
 
 export async function GET() {
     try {
+        const session = await auth()
+        if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
         const weekStart = getWeekStart()
 
         let mealPlan = await prisma.mealPlan.findFirst({
-            where: { weekStart },
+            where: { weekStart, userId: session.user.id },
             include: {
                 slots: {
                     include: { recipe: true },
@@ -25,7 +29,7 @@ export async function GET() {
 
         if (!mealPlan) {
             mealPlan = await prisma.mealPlan.create({
-                data: { weekStart },
+                data: { weekStart, userId: session.user.id },
                 include: {
                     slots: {
                         include: { recipe: true },

@@ -15,41 +15,8 @@ export async function POST(request: Request) {
             data: { name, email, password: hashed },
         })
 
-        const presets = await prisma.recipe.findMany({
-            where: { isPublic: true, userId: null },
-            include: { ingredients: true, steps: true },
-        })
-
-        for (const preset of presets) {
-            await prisma.recipe.create({
-                data: {
-                    title: preset.title,
-                    description: preset.description,
-                    imageUrl: preset.imageUrl,
-                    prepTime: preset.prepTime,
-                    cookTime: preset.cookTime,
-                    servings: preset.servings,
-                    category: preset.category,
-                    tags: preset.tags,
-                    isPublic: false,
-                    copiedFromPreset: true,
-                    userId: user.id,
-                    ingredients: {
-                        create: preset.ingredients.map((ing) => ({
-                            name: ing.name,
-                            amount: ing.amount,
-                            unit: ing.unit,
-                        })),
-                    },
-                    steps: {
-                        create: preset.steps.map((step) => ({
-                            order: step.order,
-                            instruction: step.instruction,
-                        })),
-                    },
-                },
-            })
-        }
+        // Preset copying is now handled by NextAuth's createUser event in auth.ts
+        // for both Google OAuth and email/password users — no need to do it here
 
         return NextResponse.json({ id: user.id, email: user.email }, { status: 201 })
     } catch (error) {

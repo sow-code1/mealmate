@@ -18,80 +18,162 @@ export default function Navbar() {
         { href: '/mealplan', label: 'Meal Planner' },
         { href: '/grocery', label: 'Grocery List' },
         ...(isAdmin ? [
-            { href: '/admin/users', label: '👥 Users' },
-            { href: '/admin/hidden', label: '🗑️ Hidden' },
+            { href: '/admin/users', label: 'Users' },
+            { href: '/admin/hidden', label: 'Hidden' },
         ] : []),
     ]
 
     return (
-        <nav className="bg-white border-b border-gray-200 px-6 py-4">
-            <div className="max-w-6xl mx-auto flex items-center justify-between">
-                <Link href="/" className="text-xl font-bold text-green-600">
-                    🍽️ MealMate
+        <nav style={{ background: 'var(--card)', borderBottom: '1px solid var(--card-border)' }} className="px-6 py-0 sticky top-0 z-50 backdrop-blur-sm">
+            <div className="max-w-6xl mx-auto flex items-center justify-between h-16">
+
+                {/* Logo */}
+                <Link href="/" className="flex items-center gap-2 shrink-0">
+                    <span className="text-2xl">🍽️</span>
+                    <span style={{
+                        fontFamily: 'Playfair Display, serif',
+                        fontWeight: 700,
+                        fontSize: '1.25rem',
+                        color: 'var(--primary)',
+                        letterSpacing: '-0.01em'
+                    }}>
+                        MealMate
+                    </span>
                 </Link>
 
-                <div className="hidden sm:flex items-center gap-6">
-                    {links.map(({ href, label }) => (
-                        <Link
-                            key={href}
-                            href={href}
-                            className={`font-medium transition-colors ${
-                                pathname === href ? 'text-green-600' : 'text-gray-600 hover:text-green-600'
-                            }`}
-                        >
-                            {label}
-                        </Link>
-                    ))}
+                {/* Desktop links */}
+                <div className="hidden sm:flex items-center gap-1">
+                    {links.map(({ href, label }) => {
+                        const isActive = pathname === href
+                        return (
+                            <Link
+                                key={href}
+                                href={href}
+                                style={{
+                                    color: isActive ? 'var(--primary)' : 'var(--muted)',
+                                    background: isActive ? 'var(--primary-light)' : 'transparent',
+                                    fontFamily: 'DM Sans, sans-serif',
+                                    fontWeight: 500,
+                                    fontSize: '0.9rem',
+                                    padding: '0.4rem 0.85rem',
+                                    borderRadius: 'var(--radius-sm)',
+                                    transition: 'all 0.15s ease',
+                                    textDecoration: 'none',
+                                }}
+                                onMouseEnter={e => {
+                                    if (!isActive) {
+                                        (e.target as HTMLElement).style.color = 'var(--primary)'
+                                        ;(e.target as HTMLElement).style.background = 'var(--muted-light)'
+                                    }
+                                }}
+                                onMouseLeave={e => {
+                                    if (!isActive) {
+                                        (e.target as HTMLElement).style.color = 'var(--muted)'
+                                        ;(e.target as HTMLElement).style.background = 'transparent'
+                                    }
+                                }}
+                            >
+                                {label}
+                            </Link>
+                        )
+                    })}
+                </div>
+
+                {/* Right side */}
+                <div className="hidden sm:flex items-center gap-3">
                     {isAdmin && <AdminModeToggle />}
                     {session ? (
                         <div className="flex items-center gap-3">
-                            <span className="text-sm text-gray-500">{session.user?.name ?? session.user?.email}</span>
+                            <div style={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: '50%',
+                                background: 'var(--primary-light)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 600,
+                                fontSize: '0.8rem',
+                                color: 'var(--primary)',
+                                fontFamily: 'DM Sans, sans-serif',
+                                flexShrink: 0,
+                            }}>
+                                {(session.user?.name ?? session.user?.email ?? 'U')[0].toUpperCase()}
+                            </div>
+                            <span style={{ fontSize: '0.85rem', color: 'var(--muted)', fontFamily: 'DM Sans, sans-serif', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {session.user?.name ?? session.user?.email}
+                            </span>
                             <button
                                 onClick={() => signOut({ callbackUrl: '/' })}
-                                className="text-sm text-red-500 hover:text-red-700 font-medium"
+                                style={{
+                                    fontSize: '0.85rem',
+                                    color: 'var(--muted)',
+                                    fontFamily: 'DM Sans, sans-serif',
+                                    fontWeight: 500,
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    padding: '0.3rem 0.6rem',
+                                    borderRadius: 'var(--radius-sm)',
+                                    transition: 'color 0.15s ease',
+                                }}
+                                onMouseEnter={e => (e.target as HTMLElement).style.color = '#dc2626'}
+                                onMouseLeave={e => (e.target as HTMLElement).style.color = 'var(--muted)'}
                             >
                                 Sign out
                             </button>
                         </div>
                     ) : (
-                        <Link href="/login" className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
+                        <Link href="/login" className="btn-primary" style={{ padding: '0.45rem 1.1rem', fontSize: '0.875rem' }}>
                             Sign in
                         </Link>
                     )}
                 </div>
 
+                {/* Hamburger */}
                 <button
-                    className="sm:hidden text-gray-600 hover:text-green-600"
+                    className="sm:hidden flex flex-col gap-1.5 p-2"
                     onClick={() => setMenuOpen(!menuOpen)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer' }}
                 >
-                    {menuOpen ? '✕' : '☰'}
+                    <span style={{ display: 'block', width: 22, height: 2, background: menuOpen ? 'transparent' : 'var(--foreground)', transition: 'all 0.2s', transform: menuOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none', borderRadius: 2 }} />
+                    <span style={{ display: 'block', width: 22, height: 2, background: 'var(--foreground)', transition: 'all 0.2s', opacity: menuOpen ? 0 : 1, borderRadius: 2 }} />
+                    <span style={{ display: 'block', width: 22, height: 2, background: menuOpen ? 'transparent' : 'var(--foreground)', transition: 'all 0.2s', transform: menuOpen ? 'rotate(-45deg) translate(5px, -5px)' : 'none', borderRadius: 2 }} />
                 </button>
             </div>
 
+            {/* Mobile menu */}
             {menuOpen && (
-                <div className="sm:hidden mt-4 flex flex-col gap-3 pb-2">
+                <div style={{ borderTop: '1px solid var(--card-border)', padding: '1rem 0', display: 'flex', flexDirection: 'column', gap: '0.25rem' }} className="sm:hidden">
                     {links.map(({ href, label }) => (
                         <Link
                             key={href}
                             href={href}
                             onClick={() => setMenuOpen(false)}
-                            className={`font-medium px-2 py-1 transition-colors ${
-                                pathname === href ? 'text-green-600' : 'text-gray-600 hover:text-green-600'
-                            }`}
+                            style={{
+                                padding: '0.6rem 0.75rem',
+                                borderRadius: 'var(--radius-sm)',
+                                color: pathname === href ? 'var(--primary)' : 'var(--foreground)',
+                                background: pathname === href ? 'var(--primary-light)' : 'transparent',
+                                fontFamily: 'DM Sans, sans-serif',
+                                fontWeight: 500,
+                                fontSize: '0.95rem',
+                                textDecoration: 'none',
+                            }}
                         >
                             {label}
                         </Link>
                     ))}
-                    {isAdmin && <AdminModeToggle />}
+                    {isAdmin && <div className="py-1"><AdminModeToggle /></div>}
                     {session ? (
                         <button
                             onClick={() => signOut({ callbackUrl: '/' })}
-                            className="text-left px-2 py-1 text-sm text-red-500 font-medium"
+                            style={{ textAlign: 'left', padding: '0.6rem 0.75rem', color: '#dc2626', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, fontSize: '0.95rem', background: 'none', border: 'none', cursor: 'pointer' }}
                         >
                             Sign out
                         </button>
                     ) : (
-                        <Link href="/login" onClick={() => setMenuOpen(false)} className="px-2 py-1 text-green-600 font-medium">
+                        <Link href="/login" onClick={() => setMenuOpen(false)} style={{ padding: '0.6rem 0.75rem', color: 'var(--primary)', fontFamily: 'DM Sans, sans-serif', fontWeight: 600, textDecoration: 'none' }}>
                             Sign in
                         </Link>
                     )}

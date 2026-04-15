@@ -18,6 +18,7 @@ model User {
   sessions      Session[]
   recipes       Recipe[]
   hiddenRecipes HiddenRecipe[]
+  mealPlans     MealPlan[]
 }
 
 model Account {
@@ -109,6 +110,8 @@ model Step {
 model MealPlan {
   id        Int        @id @default(autoincrement())
   weekStart DateTime
+  userId    String?
+  user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   slots     MealSlot[]
   createdAt DateTime   @default(now())
 }
