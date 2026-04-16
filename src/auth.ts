@@ -5,8 +5,10 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 
+const MAX_ATTEMPTS = 5
+const WINDOW_MINUTES = 15
+
 async function copyPresetsToUser(userId: string) {
-    // Check if user already has recipes — avoid duplicating
     const existing = await prisma.recipe.count({ where: { userId } })
     if (existing > 0) return
 
@@ -47,6 +49,32 @@ async function copyPresetsToUser(userId: string) {
     }
 }
 
+async function checkRateLimit(email: string): Promise<boolean> {
+    const windowStart = new Date(Date.now() - WINDOW_MINUTES * 60 * 1000)
+
+    const recentAttempts = await prisma.loginAttempt.count({
+        where: {
+            email,
+            createdAt: { gte: windowStart },
+        },
+    })
+
+    return recentAttempts >= MAX_ATTEMPTS
+}
+
+async function recordLoginAttempt(email: string) {
+    await prisma.loginAttempt.create({ data: { email } })
+
+    // Clean up old attempts older than 15 minutes to keep the table lean
+    const windowStart = new Date(Date.now() - WINDOW_MINUTES * 60 * 1000)
+    await prisma.loginAttempt.deleteMany({
+        where: {
+            email,
+            createdAt: { lt: windowStart },
+        },
+    })
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
     adapter: PrismaAdapter(prisma),
     providers: [
@@ -63,16 +91,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) return null
 
-                const user = await prisma.user.findUnique({
-                    where: { email: credentials.email as string },
-                })
-                if (!user || !user.password) return null
+                const email = credentials.email as string
+
+                // Check rate limit first
+                const isRateLimited = await checkRateLimit(email)
+                if (isRateLimited) return null
+
+                const user = await prisma.user.findUnique({ where: { email } })
+
+                if (!user || !user.password) {
+                    // Record attempt even for non-existent users to prevent enumeration
+                    await recordLoginAttempt(email)
+                    return null
+                }
 
                 const valid = await bcrypt.compare(credentials.password as string, user.password)
-                if (!valid) return null
+
+                if (!valid) {
+                    await recordLoginAttempt(email)
+                    return null
+                }
 
                 // Block login if email not verified
                 if (!user.emailVerified) return null
+
+                // Successful login — clear attempts
+                await prisma.loginAttempt.deleteMany({ where: { email } })
 
                 return user
             },
@@ -103,9 +147,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     events: {
         async createUser({ user }) {
-            // Fires for Google OAuth users — email users get presets in /api/auth/verify
-            // Only copy if emailVerified is set (Google sets this automatically)
-            if (user.id && user.emailVerified) {
+            if (user.id) {
                 try {
                     await copyPresetsToUser(user.id)
                 } catch (error) {

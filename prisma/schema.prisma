@@ -55,6 +55,14 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model LoginAttempt {
+  id        Int      @id @default(autoincrement())
+  email     String
+  createdAt DateTime @default(now())
+
+  @@index([email, createdAt])
+}
+
 model Recipe {
   id               Int            @id @default(autoincrement())
   title            String
