@@ -14,7 +14,6 @@ export default async function Home() {
                 position: 'relative',
                 overflow: 'hidden',
             }}>
-                {/* Decorative blobs */}
                 <div style={{
                     position: 'absolute', top: -80, right: -80, width: 320, height: 320,
                     borderRadius: '50%', background: 'radial-gradient(circle, #3d6b4520 0%, transparent 70%)',
@@ -41,7 +40,7 @@ export default async function Home() {
                         marginBottom: '1.5rem',
                         border: '1px solid #c8e6c9',
                     }}>
-                        Your personal kitchen companion
+                        Your personal kitchen & calorie companion
                     </span>
 
                     <h1 style={{
@@ -54,7 +53,7 @@ export default async function Home() {
                         letterSpacing: '-0.02em',
                     }}>
                         Cook smarter with{' '}
-                        <span style={{ color: 'var(--primary)', fontStyle: 'italic' }}>MealMate</span>
+                        <span style={{ color: 'var(--primary)', fontStyle: 'italic' }}>Caloracle</span>
                     </h1>
 
                     <p style={{
@@ -66,7 +65,7 @@ export default async function Home() {
                         lineHeight: 1.7,
                         fontWeight: 300,
                     }}>
-                        Save your favorite recipes, plan your meals for the week, and generate a grocery list automatically — all in one place.
+                        Save your favorite recipes, plan your meals for the week, track your calories, and generate a grocery list automatically — all in one place.
                     </p>
 
                     <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -135,10 +134,17 @@ export default async function Home() {
                             delay: 'animate-fade-up-delay-3',
                         },
                         {
+                            icon: '🔥',
+                            title: 'Calorie Tracker',
+                            desc: 'Track your calories and macros to stay on top of your health and weight goals.',
+                            accent: '#f0f4ff',
+                            delay: 'animate-fade-up-delay-4',
+                        },
+                        {
                             icon: '🛒',
                             title: 'Grocery List',
                             desc: 'Automatically generate a shopping list from your weekly meal plan — ingredients totaled up.',
-                            accent: '#f0f4ff',
+                            accent: '#fef9e7',
                             delay: 'animate-fade-up-delay-4',
                         },
                     ].map(({ icon, title, desc, accent, delay }) => (
@@ -193,14 +199,14 @@ export default async function Home() {
                     fontWeight: 700, color: 'white',
                     marginBottom: '0.75rem', position: 'relative',
                 }}>
-                    Ready to start cooking?
+                    Ready to start cooking smarter?
                 </h2>
                 <p style={{
                     fontFamily: 'DM Sans, sans-serif',
                     color: 'rgba(255,255,255,0.75)', fontSize: '1rem',
                     marginBottom: '2rem', fontWeight: 300, position: 'relative',
                 }}>
-                    Sign up free and start building your personal recipe collection.
+                    Sign up free and start building your personal recipe collection with calorie tracking.
                 </p>
                 {session ? (
                     <Link href="/recipes/new" style={{
@@ -208,7 +214,6 @@ export default async function Home() {
                         padding: '0.85rem 2rem', borderRadius: 'var(--radius-sm)',
                         fontFamily: 'DM Sans, sans-serif', fontWeight: 700,
                         fontSize: '0.95rem', textDecoration: 'none', display: 'inline-block',
-                        transition: 'transform 0.15s ease, box-shadow 0.15s ease',
                         position: 'relative',
                     }}>
                         + Add Your First Recipe
