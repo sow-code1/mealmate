@@ -26,15 +26,17 @@ export default async function RecipesPage() {
     })
 
     return (
-        <div className="max-w-6xl mx-auto px-6 py-12">
-            <div className="flex items-center justify-between mb-8">
-                <h1 className="text-3xl font-bold text-gray-900">
-                    Recipes {adminMode && <span className="text-sm text-purple-600 font-normal ml-2">⚙️ Admin mode</span>}
-                </h1>
-                <Link
-                    href="/recipes/new"
-                    className="bg-green-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
-                >
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '3rem 1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
+                <div>
+                    <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '2rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '0.25rem' }}>
+                        Recipes {adminMode && <span style={{ fontSize: '0.85rem', color: '#9333ea', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, marginLeft: '0.5rem' }}>⚙️ Admin mode</span>}
+                    </h1>
+                    <p style={{ fontFamily: 'DM Sans, sans-serif', color: 'var(--muted)', fontSize: '0.9rem' }}>
+                        {adminMode ? 'Viewing all user-created recipes' : 'Your personal recipe collection'}
+                    </p>
+                </div>
+                <Link href="/recipes/new" className="btn-primary">
                     + Add Recipe
                 </Link>
             </div>

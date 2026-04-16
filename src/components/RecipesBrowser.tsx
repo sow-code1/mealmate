@@ -44,20 +44,37 @@ export default function RecipesBrowser({ recipes: initialRecipes }: { recipes: R
                     placeholder="Search recipes..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                    style={{
+                        width: '100%',
+                        border: '1px solid var(--card-border)',
+                        borderRadius: 'var(--radius-sm)',
+                        padding: '0.6rem 1rem',
+                        fontSize: '0.9rem',
+                        fontFamily: 'DM Sans, sans-serif',
+                        background: 'var(--card)',
+                        color: 'var(--foreground)',
+                        outline: 'none',
+                    }}
                 />
             </div>
 
-            <div className="flex gap-2 flex-wrap mb-8">
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
                 {CATEGORIES.map((cat) => (
                     <button
                         key={cat}
                         onClick={() => setActiveCategory(cat)}
-                        className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                            activeCategory === cat
-                                ? 'bg-green-600 text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
+                        style={{
+                            padding: '0.4rem 1rem',
+                            borderRadius: 999,
+                            fontSize: '0.82rem',
+                            fontWeight: 600,
+                            fontFamily: 'DM Sans, sans-serif',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                            background: activeCategory === cat ? 'var(--primary)' : 'var(--muted-light)',
+                            color: activeCategory === cat ? 'white' : 'var(--muted)',
+                        }}
                     >
                         {cat === 'Favorites' ? '❤️ Favorites' : cat}
                     </button>
@@ -65,9 +82,9 @@ export default function RecipesBrowser({ recipes: initialRecipes }: { recipes: R
             </div>
 
             {filtered.length === 0 ? (
-                <div className="text-center py-20 text-gray-400">
-                    <p className="text-xl">No recipes found</p>
-                    <p className="text-sm mt-2">Try a different search or category</p>
+                <div style={{ textAlign: 'center', padding: '5rem 0', color: 'var(--muted)', fontFamily: 'DM Sans, sans-serif' }}>
+                    <p style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>No recipes found</p>
+                    <p style={{ fontSize: '0.85rem' }}>Try a different search or category</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

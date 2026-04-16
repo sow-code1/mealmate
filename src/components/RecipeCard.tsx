@@ -40,14 +40,9 @@ export default function RecipeCard({
     const tagList = tags ? tags.split(',').map((t) => t.trim()).filter(Boolean) : []
     const totalTime = (prepTime ?? 0) + (cookTime ?? 0)
 
-    // Generate a consistent warm color per category for the card top accent
     const categoryColors: Record<string, string> = {
-        breakfast: '#fdf3eb',
-        lunch: '#eef4ef',
-        dinner: '#f0f4ff',
-        snack: '#fef9e7',
-        dessert: '#fdf0f5',
-        default: '#f5f3ef',
+        breakfast: '#fdf3eb', lunch: '#eef4ef', dinner: '#f0f4ff',
+        snack: '#fef9e7', dessert: '#fdf0f5', drink: '#f0faff', default: '#f5f3ef',
     }
     const accentBg = categoryColors[(category ?? 'default').toLowerCase()] ?? categoryColors.default
 
@@ -68,25 +63,15 @@ export default function RecipeCard({
                     position: 'relative',
                 }}
             >
-                {/* Color accent top strip */}
-                <div style={{
-                    height: 6,
-                    background: `linear-gradient(90deg, var(--primary), ${accentBg})`,
-                }} />
+                {/* Top accent strip */}
+                <div style={{ height: 4, background: `linear-gradient(90deg, var(--primary), ${accentBg})` }} />
 
-                {/* Card image placeholder with category initial */}
-                <div style={{
-                    height: 130,
-                    background: accentBg,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    position: 'relative',
-                }}>
+                {/* Letter placeholder */}
+                <div style={{ height: 140, background: accentBg, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <span style={{
                         fontFamily: 'Playfair Display, serif',
-                        fontSize: '3.5rem',
-                        opacity: 0.18,
+                        fontSize: '4rem',
+                        opacity: 0.15,
                         userSelect: 'none',
                         fontWeight: 700,
                         color: 'var(--primary)',
@@ -98,17 +83,12 @@ export default function RecipeCard({
                     <button
                         onClick={toggleFavorite}
                         style={{
-                            position: 'absolute',
-                            top: 10, right: 10,
-                            background: 'white',
-                            border: '1px solid var(--card-border)',
-                            borderRadius: '50%',
-                            width: 34, height: 34,
+                            position: 'absolute', top: 10, right: 10,
+                            background: 'white', border: '1px solid var(--card-border)',
+                            borderRadius: '50%', width: 34, height: 34,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            cursor: 'pointer',
-                            fontSize: '1rem',
-                            boxShadow: 'var(--shadow-sm)',
-                            transition: 'transform 0.15s ease',
+                            cursor: 'pointer', fontSize: '1rem',
+                            boxShadow: 'var(--shadow-sm)', transition: 'transform 0.15s ease',
                         }}
                         onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.15)')}
                         onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
@@ -118,17 +98,11 @@ export default function RecipeCard({
 
                     {/* Category badge */}
                     <div style={{
-                        position: 'absolute',
-                        bottom: 10, left: 10,
-                        background: 'var(--primary)',
-                        color: 'white',
-                        fontFamily: 'DM Sans, sans-serif',
-                        fontWeight: 600,
-                        fontSize: '0.7rem',
-                        letterSpacing: '0.05em',
-                        textTransform: 'uppercase',
-                        padding: '0.25rem 0.6rem',
-                        borderRadius: 999,
+                        position: 'absolute', bottom: 10, left: 10,
+                        background: 'var(--primary)', color: 'white',
+                        fontFamily: 'DM Sans, sans-serif', fontWeight: 700,
+                        fontSize: '0.68rem', letterSpacing: '0.06em',
+                        textTransform: 'uppercase', padding: '0.25rem 0.65rem', borderRadius: 999,
                     }}>
                         {category ?? 'Uncategorized'}
                     </div>
@@ -136,70 +110,33 @@ export default function RecipeCard({
 
                 {/* Card body */}
                 <div style={{ padding: '1.1rem 1.25rem 1.25rem' }}>
-                    <h2 style={{
-                        fontFamily: 'Playfair Display, serif',
-                        fontSize: '1.05rem',
-                        fontWeight: 600,
-                        color: 'var(--foreground)',
-                        marginBottom: '0.4rem',
-                        lineHeight: 1.3,
-                    }}>
+                    <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.1rem', fontWeight: 600, color: 'var(--foreground)', marginBottom: '0.4rem', lineHeight: 1.3 }}>
                         {title}
                     </h2>
-
                     {description && (
-                        <p style={{
-                            fontFamily: 'DM Sans, sans-serif',
-                            color: 'var(--muted)',
-                            fontSize: '0.83rem',
-                            lineHeight: 1.6,
-                            marginBottom: '0.75rem',
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                            fontWeight: 300,
-                        }}>
+                        <p style={{ fontFamily: 'DM Sans, sans-serif', color: 'var(--muted)', fontSize: '0.83rem', lineHeight: 1.6, marginBottom: '0.75rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontWeight: 300 }}>
                             {description}
                         </p>
                     )}
-
                     {tagList.length > 0 && (
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.3rem', marginBottom: '0.85rem' }}>
                             {tagList.slice(0, 3).map((tag) => (
-                                <span key={tag} style={{
-                                    fontFamily: 'DM Sans, sans-serif',
-                                    fontSize: '0.7rem',
-                                    background: 'var(--accent-light)',
-                                    color: 'var(--accent)',
-                                    padding: '0.2rem 0.55rem',
-                                    borderRadius: 999,
-                                    fontWeight: 500,
-                                }}>
+                                <span key={tag} style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.7rem', background: 'var(--accent-light)', color: 'var(--accent)', padding: '0.2rem 0.55rem', borderRadius: 999, fontWeight: 500 }}>
                                     {tag}
                                 </span>
                             ))}
                         </div>
                     )}
-
-                    {/* Meta row */}
-                    <div style={{
-                        display: 'flex',
-                        gap: '1rem',
-                        paddingTop: '0.75rem',
-                        borderTop: '1px solid var(--card-border)',
-                    }}>
-                        {totalTime > 0 && (
-                            <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.75rem', color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                                ⏱ {totalTime} min
-                            </span>
-                        )}
-                        {servings && (
-                            <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.75rem', color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                                🍽 {servings} servings
-                            </span>
-                        )}
-                    </div>
+                    {(totalTime > 0 || servings) && (
+                        <div style={{ display: 'flex', gap: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--card-border)' }}>
+                            {totalTime > 0 && (
+                                <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.75rem', color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 4 }}>⏱ {totalTime} min</span>
+                            )}
+                            {servings && (
+                                <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.75rem', color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 4 }}>🍽 {servings} servings</span>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </a>

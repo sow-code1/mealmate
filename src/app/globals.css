@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
 
 :root {
   --background: #faf9f6;
@@ -53,7 +53,6 @@ h1, h2, h3, h4 {
   letter-spacing: -0.01em;
 }
 
-/* Utility classes using CSS variables */
 .btn-primary {
   background: var(--primary);
   color: white;
@@ -106,7 +105,6 @@ h1, h2, h3, h4 {
   transform: translateY(-2px);
 }
 
-/* Subtle texture overlay on hero sections */
 .texture-overlay {
   position: relative;
 }
@@ -120,16 +118,9 @@ h1, h2, h3, h4 {
   border-radius: inherit;
 }
 
-/* Page transition fade */
 @keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-up {

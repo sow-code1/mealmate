@@ -3,21 +3,53 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
+import ImageUpload from '@/components/ImageUpload'
+
+const inputStyle = {
+    width: '100%',
+    border: '1px solid var(--card-border)',
+    borderRadius: 'var(--radius-sm)',
+    padding: '0.6rem 0.85rem',
+    fontSize: '0.9rem',
+    fontFamily: 'DM Sans, sans-serif',
+    color: 'var(--foreground)',
+    background: 'var(--background)',
+    outline: 'none',
+    transition: 'border-color 0.15s ease',
+}
+
+const labelStyle = {
+    display: 'block',
+    fontSize: '0.82rem',
+    fontWeight: 600,
+    fontFamily: 'DM Sans, sans-serif',
+    color: 'var(--foreground)',
+    marginBottom: '0.4rem',
+    letterSpacing: '0.01em',
+}
 
 export default function NewRecipePage() {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
+    const [imageUrl, setImageUrl] = useState<string | null>(null)
     const [form, setForm] = useState({
-        title: '',
-        description: '',
-        category: '',
-        prepTime: '',
-        cookTime: '',
-        servings: '',
-        tags: '',
+        title: '', description: '', category: '',
+        prepTime: '', cookTime: '', servings: '', tags: '',
     })
     const [ingredients, setIngredients] = useState([{ name: '', amount: '', unit: '' }])
     const [steps, setSteps] = useState([{ instruction: '' }])
+
+    const updateIngredient = (i: number, field: string, value: string) => {
+        const updated = [...ingredients]
+        updated[i] = { ...updated[i], [field]: value }
+        setIngredients(updated)
+    }
+
+    const updateStep = (i: number, value: string) => {
+        const updated = [...steps]
+        updated[i].instruction = value
+        setSteps(updated)
+    }
 
     const handleSubmit = async () => {
         if (!form.title) { toast.error('Title is required'); return }
@@ -28,6 +60,7 @@ export default function NewRecipePage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...form,
+                    imageUrl,
                     prepTime: parseInt(form.prepTime) || 0,
                     cookTime: parseInt(form.cookTime) || 0,
                     servings: parseInt(form.servings) || 0,
@@ -45,162 +78,112 @@ export default function NewRecipePage() {
     }
 
     return (
-        <div className="max-w-2xl mx-auto px-6 py-12">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">Add New Recipe</h1>
+        <div style={{ maxWidth: 720, margin: '0 auto', padding: '3rem 1.5rem' }}>
+            <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '2rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '0.5rem' }}>
+                Add New Recipe
+            </h1>
+            <p style={{ fontFamily: 'DM Sans, sans-serif', color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>
+                Fill in the details below to add a recipe to your collection.
+            </p>
 
-            <div className="bg-white rounded-xl border border-gray-200 p-8 space-y-6">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                    <input
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                        value={form.title}
-                        onChange={(e) => setForm({ ...form, title: e.target.value })}
-                    />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+
+                {/* Image upload */}
+                <div style={{ background: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 'var(--radius)', padding: '1.5rem' }}>
+                    <label style={labelStyle}>Recipe Photo <span style={{ color: 'var(--muted)', fontWeight: 400 }}>(optional)</span></label>
+                    <ImageUpload onUpload={(url) => setImageUrl(url)} />
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                    <textarea
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                        rows={3}
-                        value={form.description}
-                        onChange={(e) => setForm({ ...form, description: e.target.value })}
-                    />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
+                {/* Basic info */}
+                <div style={{ background: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 'var(--radius)', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+                    <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.05rem', fontWeight: 600, color: 'var(--foreground)', marginBottom: '0.25rem' }}>Basic Info</h2>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                        <input
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                            value={form.category}
-                            onChange={(e) => setForm({ ...form, category: e.target.value })}
-                        />
+                        <label style={labelStyle}>Title *</label>
+                        <input style={inputStyle} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Honey Garlic Chicken" />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Servings</label>
-                        <input
-                            type="number"
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                            value={form.servings}
-                            onChange={(e) => setForm({ ...form, servings: e.target.value })}
-                        />
+                        <label style={labelStyle}>Description</label>
+                        <textarea style={{ ...inputStyle, resize: 'vertical' }} rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="A short description of the recipe..." />
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        <div>
+                            <label style={labelStyle}>Category</label>
+                            <select style={inputStyle} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+                                <option value="">Select category</option>
+                                {['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Dessert', 'Drink'].map(c => (
+                                    <option key={c} value={c.toLowerCase()}>{c}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label style={labelStyle}>Servings</label>
+                            <input type="number" style={inputStyle} value={form.servings} onChange={(e) => setForm({ ...form, servings: e.target.value })} placeholder="4" />
+                        </div>
+                        <div>
+                            <label style={labelStyle}>Prep Time (min)</label>
+                            <input type="number" style={inputStyle} value={form.prepTime} onChange={(e) => setForm({ ...form, prepTime: e.target.value })} placeholder="15" />
+                        </div>
+                        <div>
+                            <label style={labelStyle}>Cook Time (min)</label>
+                            <input type="number" style={inputStyle} value={form.cookTime} onChange={(e) => setForm({ ...form, cookTime: e.target.value })} placeholder="30" />
+                        </div>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Prep Time (min)</label>
-                        <input
-                            type="number"
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                            value={form.prepTime}
-                            onChange={(e) => setForm({ ...form, prepTime: e.target.value })}
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Cook Time (min)</label>
-                        <input
-                            type="number"
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                            value={form.cookTime}
-                            onChange={(e) => setForm({ ...form, cookTime: e.target.value })}
-                        />
+                        <label style={labelStyle}>Dietary Tags <span style={{ color: 'var(--muted)', fontWeight: 400 }}>(comma separated)</span></label>
+                        <input style={inputStyle} placeholder="vegetarian, gluten-free, high-protein" value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} />
                     </div>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Dietary Tags <span className="text-gray-400 font-normal">(comma separated, e.g. vegetarian, gluten-free)</span>
-                    </label>
-                    <input
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                        placeholder="vegetarian, gluten-free, high-protein"
-                        value={form.tags}
-                        onChange={(e) => setForm({ ...form, tags: e.target.value })}
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Ingredients</label>
-                    <div className="space-y-2">
+                {/* Ingredients */}
+                <div style={{ background: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 'var(--radius)', padding: '1.5rem' }}>
+                    <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.05rem', fontWeight: 600, color: 'var(--foreground)', marginBottom: '1rem' }}>Ingredients</h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                         {ingredients.map((ing, i) => (
-                            <div key={i} className="flex gap-2">
-                                <input
-                                    placeholder="Amount"
-                                    className="w-20 border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                                    value={ing.amount}
-                                    onChange={(e) => {
-                                        const updated = [...ingredients]
-                                        updated[i].amount = e.target.value
-                                        setIngredients(updated)
-                                    }}
-                                />
-                                <input
-                                    placeholder="Unit"
-                                    className="w-20 border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                                    value={ing.unit}
-                                    onChange={(e) => {
-                                        const updated = [...ingredients]
-                                        updated[i].unit = e.target.value
-                                        setIngredients(updated)
-                                    }}
-                                />
-                                <input
-                                    placeholder="Ingredient name"
-                                    className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                                    value={ing.name}
-                                    onChange={(e) => {
-                                        const updated = [...ingredients]
-                                        updated[i].name = e.target.value
-                                        setIngredients(updated)
-                                    }}
-                                />
+                            <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                <input style={{ ...inputStyle, width: 80 }} placeholder="Amt" value={ing.amount} onChange={(e) => updateIngredient(i, 'amount', e.target.value)} />
+                                <input style={{ ...inputStyle, width: 75 }} placeholder="Unit" value={ing.unit} onChange={(e) => updateIngredient(i, 'unit', e.target.value)} />
+                                <input style={{ ...inputStyle, flex: 1 }} placeholder="Ingredient name" value={ing.name} onChange={(e) => updateIngredient(i, 'name', e.target.value)} />
+                                {ingredients.length > 1 && (
+                                    <button onClick={() => setIngredients(ingredients.filter((_, idx) => idx !== i))} style={{ background: 'none', border: 'none', color: 'var(--muted)', cursor: 'pointer', fontSize: '1.1rem', padding: '0 0.25rem', lineHeight: 1 }}>×</button>
+                                )}
                             </div>
                         ))}
                     </div>
-                    <button
-                        onClick={() => setIngredients([...ingredients, { name: '', amount: '', unit: '' }])}
-                        className="mt-2 text-sm text-green-600 hover:underline"
-                    >
+                    <button onClick={() => setIngredients([...ingredients, { name: '', amount: '', unit: '' }])} style={{ marginTop: '0.75rem', background: 'none', border: 'none', color: 'var(--primary)', fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', padding: 0 }}>
                         + Add ingredient
                     </button>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Steps</label>
-                    <div className="space-y-2">
+                {/* Steps */}
+                <div style={{ background: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 'var(--radius)', padding: '1.5rem' }}>
+                    <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.05rem', fontWeight: 600, color: 'var(--foreground)', marginBottom: '1rem' }}>Steps</h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                         {steps.map((step, i) => (
-                            <div key={i} className="flex gap-2 items-start">
-                <span className="w-7 h-7 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-1">
-                  {i + 1}
-                </span>
-                                <textarea
-                                    placeholder="Step instruction"
-                                    className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                                    rows={2}
-                                    value={step.instruction}
-                                    onChange={(e) => {
-                                        const updated = [...steps]
-                                        updated[i].instruction = e.target.value
-                                        setSteps(updated)
-                                    }}
-                                />
+                            <div key={i} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                                <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, fontFamily: 'DM Sans, sans-serif', flexShrink: 0, marginTop: 6 }}>
+                                    {i + 1}
+                                </div>
+                                <textarea style={{ ...inputStyle, flex: 1, resize: 'vertical' }} rows={2} placeholder="Describe this step..." value={step.instruction} onChange={(e) => updateStep(i, e.target.value)} />
+                                {steps.length > 1 && (
+                                    <button onClick={() => setSteps(steps.filter((_, idx) => idx !== i))} style={{ background: 'none', border: 'none', color: 'var(--muted)', cursor: 'pointer', fontSize: '1.1rem', padding: '0 0.25rem', marginTop: 6, lineHeight: 1 }}>×</button>
+                                )}
                             </div>
                         ))}
                     </div>
-                    <button
-                        onClick={() => setSteps([...steps, { instruction: '' }])}
-                        className="mt-2 text-sm text-green-600 hover:underline"
-                    >
+                    <button onClick={() => setSteps([...steps, { instruction: '' }])} style={{ marginTop: '0.75rem', background: 'none', border: 'none', color: 'var(--primary)', fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', padding: 0 }}>
                         + Add step
                     </button>
                 </div>
 
-                <button
-                    onClick={handleSubmit}
-                    disabled={loading}
-                    className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50"
-                >
-                    {loading ? 'Saving...' : 'Save Recipe'}
-                </button>
+                {/* Submit */}
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                    <button onClick={handleSubmit} disabled={loading} className="btn-primary" style={{ flex: 1, textAlign: 'center', opacity: loading ? 0.6 : 1, cursor: loading ? 'not-allowed' : 'pointer', border: 'none' }}>
+                        {loading ? 'Saving...' : 'Save Recipe'}
+                    </button>
+                    <button onClick={() => router.push('/recipes')} style={{ padding: '0.75rem 1.5rem', border: '1px solid var(--card-border)', borderRadius: 'var(--radius-sm)', fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '0.9rem', background: 'var(--card)', color: 'var(--foreground)', cursor: 'pointer' }}>
+                        Cancel
+                    </button>
+                </div>
             </div>
         </div>
     )

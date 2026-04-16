@@ -11,8 +11,8 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-    title: "MealMate",
-    description: "Your personal recipe manager and meal planner",
+    title: "Caloracle",
+    description: "Your personal recipe manager, meal planner and calorie tracker",
 };
 
 export default function RootLayout({

@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
             where: {
                 userId: session.user.id,
                 deleted: false,
-                ...(isMealPlanner ? {} : { copiedFromPreset: false }),
             },
             orderBy: { createdAt: 'desc' },
         })

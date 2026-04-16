@@ -52,7 +52,7 @@ export async function PUT(
         }
 
         const body = await request.json()
-        const { title, description, category, prepTime, cookTime, servings, tags, ingredients, steps } = body
+        const { title, description, category, prepTime, cookTime, servings, tags, imageUrl, ingredients, steps } = body
 
         await prisma.ingredient.deleteMany({ where: { recipeId: parseInt(id) } })
         await prisma.step.deleteMany({ where: { recipeId: parseInt(id) } })
@@ -60,7 +60,7 @@ export async function PUT(
         const updated = await prisma.recipe.update({
             where: { id: parseInt(id) },
             data: {
-                title, description, category, prepTime, cookTime, servings, tags,
+                title, description, category, prepTime, cookTime, servings, tags, imageUrl,
                 ingredients: ingredients ? { create: ingredients } : undefined,
                 steps: steps ? { create: steps } : undefined,
             },
@@ -95,10 +95,8 @@ export async function DELETE(
         }
 
         if (adminMode) {
-            // Admin mode — permanently delete globally
             await prisma.recipe.delete({ where: { id: parseInt(id) } })
         } else {
-            // Personal mode — soft delete, goes to hidden list
             await prisma.recipe.update({
                 where: { id: parseInt(id) },
                 data: { deleted: true, deletedAt: new Date() },

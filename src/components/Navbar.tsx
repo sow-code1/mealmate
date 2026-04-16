@@ -1,184 +1,235 @@
-'use client'
-
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useState } from 'react'
-import { useSession, signOut } from 'next-auth/react'
-import AdminModeToggle from '@/components/AdminModeToggle'
+import { auth } from '@/auth'
 
-export default function Navbar() {
-    const pathname = usePathname()
-    const [menuOpen, setMenuOpen] = useState(false)
-    const { data: session } = useSession()
-    // @ts-ignore
-    const isAdmin = session?.user?.isAdmin === true
-
-    const links = [
-        { href: '/recipes', label: 'Recipes' },
-        { href: '/mealplan', label: 'Meal Planner' },
-        { href: '/grocery', label: 'Grocery List' },
-        ...(isAdmin ? [
-            { href: '/admin/users', label: 'Users' },
-            { href: '/admin/hidden', label: 'Hidden' },
-        ] : []),
-    ]
+export default async function Home() {
+    const session = await auth()
 
     return (
-        <nav style={{ background: 'var(--card)', borderBottom: '1px solid var(--card-border)' }} className="px-6 py-0 sticky top-0 z-50 backdrop-blur-sm">
-            <div className="max-w-6xl mx-auto flex items-center justify-between h-16">
+        <div>
+            {/* Hero */}
+            <div className="texture-overlay" style={{
+                background: 'linear-gradient(135deg, #eef4ef 0%, #faf9f6 50%, #fdf3eb 100%)',
+                padding: '6rem 1.5rem 5rem',
+                textAlign: 'center',
+                position: 'relative',
+                overflow: 'hidden',
+            }}>
+                <div style={{
+                    position: 'absolute', top: -80, right: -80, width: 320, height: 320,
+                    borderRadius: '50%', background: 'radial-gradient(circle, #3d6b4520 0%, transparent 70%)',
+                    pointerEvents: 'none',
+                }} />
+                <div style={{
+                    position: 'absolute', bottom: -60, left: -60, width: 240, height: 240,
+                    borderRadius: '50%', background: 'radial-gradient(circle, #c8773a18 0%, transparent 70%)',
+                    pointerEvents: 'none',
+                }} />
 
-                {/* Logo */}
-                <Link href="/" className="flex items-center gap-2 shrink-0">
-                    <span className="text-2xl">🍽️</span>
+                <div className="animate-fade-up" style={{ position: 'relative', zIndex: 1 }}>
                     <span style={{
-                        fontFamily: 'Playfair Display, serif',
-                        fontWeight: 700,
-                        fontSize: '1.25rem',
+                        display: 'inline-block',
+                        background: 'var(--primary-light)',
                         color: 'var(--primary)',
-                        letterSpacing: '-0.01em'
+                        fontFamily: 'DM Sans, sans-serif',
+                        fontWeight: 600,
+                        fontSize: '0.8rem',
+                        letterSpacing: '0.08em',
+                        textTransform: 'uppercase',
+                        padding: '0.35rem 1rem',
+                        borderRadius: 999,
+                        marginBottom: '1.5rem',
+                        border: '1px solid #c8e6c9',
                     }}>
-                        MealMate
+                        Your personal kitchen & calorie companion
                     </span>
-                </Link>
 
-                {/* Desktop links */}
-                <div className="hidden sm:flex items-center gap-1">
-                    {links.map(({ href, label }) => {
-                        const isActive = pathname === href
-                        return (
-                            <Link
-                                key={href}
-                                href={href}
-                                style={{
-                                    color: isActive ? 'var(--primary)' : 'var(--muted)',
-                                    background: isActive ? 'var(--primary-light)' : 'transparent',
-                                    fontFamily: 'DM Sans, sans-serif',
-                                    fontWeight: 500,
-                                    fontSize: '0.9rem',
-                                    padding: '0.4rem 0.85rem',
-                                    borderRadius: 'var(--radius-sm)',
-                                    transition: 'all 0.15s ease',
-                                    textDecoration: 'none',
-                                }}
-                                onMouseEnter={e => {
-                                    if (!isActive) {
-                                        (e.target as HTMLElement).style.color = 'var(--primary)'
-                                        ;(e.target as HTMLElement).style.background = 'var(--muted-light)'
-                                    }
-                                }}
-                                onMouseLeave={e => {
-                                    if (!isActive) {
-                                        (e.target as HTMLElement).style.color = 'var(--muted)'
-                                        ;(e.target as HTMLElement).style.background = 'transparent'
-                                    }
-                                }}
-                            >
-                                {label}
-                            </Link>
-                        )
-                    })}
-                </div>
+                    <h1 style={{
+                        fontFamily: 'Playfair Display, serif',
+                        fontSize: 'clamp(2.8rem, 6vw, 5rem)',
+                        fontWeight: 700,
+                        color: 'var(--foreground)',
+                        marginBottom: '1.25rem',
+                        lineHeight: 1.1,
+                        letterSpacing: '-0.02em',
+                    }}>
+                        Cook smarter with{' '}
+                        <span style={{ color: 'var(--primary)', fontStyle: 'italic' }}>Caloracle</span>
+                    </h1>
 
-                {/* Right side */}
-                <div className="hidden sm:flex items-center gap-3">
-                    {isAdmin && <AdminModeToggle />}
-                    {session ? (
-                        <div className="flex items-center gap-3">
-                            <div style={{
-                                width: 32,
-                                height: 32,
-                                borderRadius: '50%',
-                                background: 'var(--primary-light)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontWeight: 600,
-                                fontSize: '0.8rem',
-                                color: 'var(--primary)',
-                                fontFamily: 'DM Sans, sans-serif',
-                                flexShrink: 0,
-                            }}>
-                                {(session.user?.name ?? session.user?.email ?? 'U')[0].toUpperCase()}
-                            </div>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--muted)', fontFamily: 'DM Sans, sans-serif', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {session.user?.name ?? session.user?.email}
-                            </span>
-                            <button
-                                onClick={() => signOut({ callbackUrl: '/' })}
-                                style={{
-                                    fontSize: '0.85rem',
-                                    color: 'var(--muted)',
-                                    fontFamily: 'DM Sans, sans-serif',
-                                    fontWeight: 500,
-                                    background: 'none',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    padding: '0.3rem 0.6rem',
-                                    borderRadius: 'var(--radius-sm)',
-                                    transition: 'color 0.15s ease',
-                                }}
-                                onMouseEnter={e => (e.target as HTMLElement).style.color = '#dc2626'}
-                                onMouseLeave={e => (e.target as HTMLElement).style.color = 'var(--muted)'}
-                            >
-                                Sign out
-                            </button>
-                        </div>
-                    ) : (
-                        <Link href="/login" className="btn-primary" style={{ padding: '0.45rem 1.1rem', fontSize: '0.875rem' }}>
-                            Sign in
+                    <p style={{
+                        fontFamily: 'DM Sans, sans-serif',
+                        fontSize: '1.15rem',
+                        color: 'var(--muted)',
+                        maxWidth: 540,
+                        margin: '0 auto 2.5rem',
+                        lineHeight: 1.7,
+                        fontWeight: 300,
+                    }}>
+                        Save your favorite recipes, plan your meals for the week, track your calories, and generate a grocery list automatically — all in one place.
+                    </p>
+
+                    <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                        <Link href={session ? '/recipes' : '/login'} className="btn-primary">
+                            Browse Recipes
                         </Link>
-                    )}
+                        <Link href={session ? '/mealplan' : '/login'} className="btn-outline">
+                            Plan My Week
+                        </Link>
+                    </div>
                 </div>
-
-                {/* Hamburger */}
-                <button
-                    className="sm:hidden flex flex-col gap-1.5 p-2"
-                    onClick={() => setMenuOpen(!menuOpen)}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-                >
-                    <span style={{ display: 'block', width: 22, height: 2, background: menuOpen ? 'transparent' : 'var(--foreground)', transition: 'all 0.2s', transform: menuOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none', borderRadius: 2 }} />
-                    <span style={{ display: 'block', width: 22, height: 2, background: 'var(--foreground)', transition: 'all 0.2s', opacity: menuOpen ? 0 : 1, borderRadius: 2 }} />
-                    <span style={{ display: 'block', width: 22, height: 2, background: menuOpen ? 'transparent' : 'var(--foreground)', transition: 'all 0.2s', transform: menuOpen ? 'rotate(-45deg) translate(5px, -5px)' : 'none', borderRadius: 2 }} />
-                </button>
             </div>
 
-            {/* Mobile menu */}
-            {menuOpen && (
-                <div style={{ borderTop: '1px solid var(--card-border)', padding: '1rem 0', display: 'flex', flexDirection: 'column', gap: '0.25rem' }} className="sm:hidden">
-                    {links.map(({ href, label }) => (
-                        <Link
-                            key={href}
-                            href={href}
-                            onClick={() => setMenuOpen(false)}
-                            style={{
-                                padding: '0.6rem 0.75rem',
-                                borderRadius: 'var(--radius-sm)',
-                                color: pathname === href ? 'var(--primary)' : 'var(--foreground)',
-                                background: pathname === href ? 'var(--primary-light)' : 'transparent',
-                                fontFamily: 'DM Sans, sans-serif',
-                                fontWeight: 500,
-                                fontSize: '0.95rem',
-                                textDecoration: 'none',
-                            }}
-                        >
-                            {label}
-                        </Link>
+            {/* Stats bar */}
+            <div style={{ background: 'var(--foreground)', padding: '1.25rem 1.5rem' }}>
+                <div style={{
+                    maxWidth: 900, margin: '0 auto',
+                    display: 'flex', justifyContent: 'center',
+                    gap: '3rem', flexWrap: 'wrap',
+                }}>
+                    {[
+                        { value: '5+', label: 'Preset Recipes' },
+                        { value: '7', label: 'Days Planned' },
+                        { value: '4', label: 'Meal Types' },
+                        { value: '∞', label: 'Possibilities' },
+                    ].map(({ value, label }) => (
+                        <div key={label} style={{ textAlign: 'center' }}>
+                            <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.6rem', fontWeight: 700, color: 'white' }}>{value}</div>
+                            <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.75rem', color: '#a8a29e', letterSpacing: '0.06em', textTransform: 'uppercase' }}>{label}</div>
+                        </div>
                     ))}
-                    {isAdmin && <div className="py-1"><AdminModeToggle /></div>}
-                    {session ? (
-                        <button
-                            onClick={() => signOut({ callbackUrl: '/' })}
-                            style={{ textAlign: 'left', padding: '0.6rem 0.75rem', color: '#dc2626', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, fontSize: '0.95rem', background: 'none', border: 'none', cursor: 'pointer' }}
-                        >
-                            Sign out
-                        </button>
-                    ) : (
-                        <Link href="/login" onClick={() => setMenuOpen(false)} style={{ padding: '0.6rem 0.75rem', color: 'var(--primary)', fontFamily: 'DM Sans, sans-serif', fontWeight: 600, textDecoration: 'none' }}>
-                            Sign in
-                        </Link>
-                    )}
                 </div>
-            )}
-        </nav>
+            </div>
+
+            {/* Features */}
+            <div style={{ maxWidth: 1100, margin: '0 auto', padding: '5rem 1.5rem' }}>
+                <div className="animate-fade-up-delay-1" style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+                    <h2 style={{
+                        fontFamily: 'Playfair Display, serif',
+                        fontSize: 'clamp(1.8rem, 3vw, 2.5rem)',
+                        fontWeight: 700,
+                        color: 'var(--foreground)',
+                        marginBottom: '0.75rem',
+                    }}>
+                        Everything you need to eat well
+                    </h2>
+                    <p style={{ fontFamily: 'DM Sans, sans-serif', color: 'var(--muted)', fontSize: '1rem', fontWeight: 300 }}>
+                        From recipe to table, we've got you covered.
+                    </p>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                    {[
+                        {
+                            icon: '📖',
+                            title: 'Recipe Manager',
+                            desc: 'Save, organize, and search your recipes with dietary tags and category filters.',
+                            accent: '#eef4ef',
+                            delay: 'animate-fade-up-delay-2',
+                        },
+                        {
+                            icon: '📅',
+                            title: 'Meal Planner',
+                            desc: 'Plan breakfast, lunch, dinner, and snacks for every day of the week.',
+                            accent: '#fdf3eb',
+                            delay: 'animate-fade-up-delay-3',
+                        },
+                        {
+                            icon: '🔥',
+                            title: 'Calorie Tracker',
+                            desc: 'Track your calories and macros to stay on top of your health and weight goals.',
+                            accent: '#f0f4ff',
+                            delay: 'animate-fade-up-delay-4',
+                        },
+                        {
+                            icon: '🛒',
+                            title: 'Grocery List',
+                            desc: 'Automatically generate a shopping list from your weekly meal plan — ingredients totaled up.',
+                            accent: '#fef9e7',
+                            delay: 'animate-fade-up-delay-4',
+                        },
+                    ].map(({ icon, title, desc, accent, delay }) => (
+                        <div key={title} className={`card ${delay}`} style={{ padding: '2rem' }}>
+                            <div style={{
+                                width: 52, height: 52, borderRadius: 14,
+                                background: accent,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: '1.6rem', marginBottom: '1.25rem',
+                            }}>
+                                {icon}
+                            </div>
+                            <h3 style={{
+                                fontFamily: 'Playfair Display, serif',
+                                fontSize: '1.2rem', fontWeight: 600,
+                                color: 'var(--foreground)', marginBottom: '0.6rem',
+                            }}>
+                                {title}
+                            </h3>
+                            <p style={{ fontFamily: 'DM Sans, sans-serif', color: 'var(--muted)', fontSize: '0.9rem', lineHeight: 1.65, fontWeight: 300 }}>
+                                {desc}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* CTA */}
+            <div style={{
+                margin: '0 1.5rem 5rem',
+                maxWidth: 1100,
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                background: 'var(--primary)',
+                borderRadius: 'var(--radius-lg)',
+                padding: '4rem 2rem',
+                textAlign: 'center',
+                position: 'relative',
+                overflow: 'hidden',
+            }}>
+                <div style={{
+                    position: 'absolute', top: -40, right: -40, width: 200, height: 200,
+                    borderRadius: '50%', background: 'rgba(255,255,255,0.05)', pointerEvents: 'none',
+                }} />
+                <div style={{
+                    position: 'absolute', bottom: -60, left: -20, width: 160, height: 160,
+                    borderRadius: '50%', background: 'rgba(255,255,255,0.04)', pointerEvents: 'none',
+                }} />
+                <h2 style={{
+                    fontFamily: 'Playfair Display, serif',
+                    fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
+                    fontWeight: 700, color: 'white',
+                    marginBottom: '0.75rem', position: 'relative',
+                }}>
+                    Ready to start cooking smarter?
+                </h2>
+                <p style={{
+                    fontFamily: 'DM Sans, sans-serif',
+                    color: 'rgba(255,255,255,0.75)', fontSize: '1rem',
+                    marginBottom: '2rem', fontWeight: 300, position: 'relative',
+                }}>
+                    Sign up free and start building your personal recipe collection with calorie tracking.
+                </p>
+                {session ? (
+                    <Link href="/recipes/new" style={{
+                        background: 'white', color: 'var(--primary)',
+                        padding: '0.85rem 2rem', borderRadius: 'var(--radius-sm)',
+                        fontFamily: 'DM Sans, sans-serif', fontWeight: 700,
+                        fontSize: '0.95rem', textDecoration: 'none', display: 'inline-block',
+                        position: 'relative',
+                    }}>
+                        + Add Your First Recipe
+                    </Link>
+                ) : (
+                    <Link href="/register" style={{
+                        background: 'white', color: 'var(--primary)',
+                        padding: '0.85rem 2rem', borderRadius: 'var(--radius-sm)',
+                        fontFamily: 'DM Sans, sans-serif', fontWeight: 700,
+                        fontSize: '0.95rem', textDecoration: 'none', display: 'inline-block',
+                        position: 'relative',
+                    }}>
+                        Create Free Account
+                    </Link>
+                )}
+            </div>
+        </div>
     )
 }
