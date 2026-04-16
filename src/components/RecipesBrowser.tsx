@@ -87,21 +87,26 @@ export default function RecipesBrowser({ recipes: initialRecipes }: { recipes: R
                     <p style={{ fontSize: '0.85rem' }}>Try a different search or category</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filtered.map((recipe) => (
-                        <RecipeCard
+                <div key={`${activeCategory}-${search}`} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filtered.map((recipe, index) => (
+                        <div
                             key={recipe.id}
-                            id={recipe.id}
-                            title={recipe.title}
-                            description={recipe.description}
-                            category={recipe.category}
-                            prepTime={recipe.prepTime}
-                            cookTime={recipe.cookTime}
-                            servings={recipe.servings}
-                            favorite={recipe.favorite}
-                            tags={recipe.tags}
-                            onFavoriteToggle={handleFavoriteToggle}
-                        />
+                            className="animate-card-in"
+                            style={{ animationDelay: `${Math.min(index, 14) * 80}ms` }}
+                        >
+                            <RecipeCard
+                                id={recipe.id}
+                                title={recipe.title}
+                                description={recipe.description}
+                                category={recipe.category}
+                                prepTime={recipe.prepTime}
+                                cookTime={recipe.cookTime}
+                                servings={recipe.servings}
+                                favorite={recipe.favorite}
+                                tags={recipe.tags}
+                                onFavoriteToggle={handleFavoriteToggle}
+                            />
+                        </div>
                     ))}
                 </div>
             )}

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { auth } from '@/auth'
+import HomeCTA from '@/components/HomeCTA'
 
 export default async function Home() {
     const session = await auth()
@@ -68,14 +69,7 @@ export default async function Home() {
                         Save your favorite recipes, plan your meals for the week, track your calories, and generate a grocery list automatically — all in one place.
                     </p>
 
-                    <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                        <Link href={session ? '/recipes' : '/login'} className="btn-primary">
-                            Browse Recipes
-                        </Link>
-                        <Link href={session ? '/mealplan' : '/login'} className="btn-outline">
-                            Plan My Week
-                        </Link>
-                    </div>
+                    <HomeCTA />
                 </div>
             </div>
 
@@ -87,7 +81,7 @@ export default async function Home() {
                     gap: '3rem', flexWrap: 'wrap',
                 }}>
                     {[
-                        { value: '5+', label: 'Preset Recipes' },
+                        { value: '30+', label: 'Preset Recipes' },
                         { value: '7', label: 'Days Planned' },
                         { value: '4', label: 'Meal Types' },
                         { value: '∞', label: 'Possibilities' },
