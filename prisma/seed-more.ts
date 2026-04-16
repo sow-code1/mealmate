@@ -34,6 +34,7 @@ const recipes = [
             { order: 3, instruction: 'Melt butter in a small pan over medium heat, add paprika and chili flakes, swirl for 30 seconds until fragrant and deep orange.' },
             { order: 4, instruction: 'Place two poached eggs on each yogurt bed, drizzle generously with the paprika butter, garnish with dill and serve immediately with crusty bread.' },
         ],
+        nutrition: { calories: 320, protein: 18, carbs: 20, fat: 18, fiber: 2 },
     },
     {
         title: 'Japanese Tamagoyaki',
@@ -58,6 +59,7 @@ const recipes = [
             { order: 4, instruction: 'Push the roll to the far end, add another third of the egg, lift the roll to let egg flow underneath, then roll again.' },
             { order: 5, instruction: 'Repeat with remaining egg. The finished roll should be golden outside and layered inside. Slice into rounds and serve.' },
         ],
+        nutrition: { calories: 180, protein: 14, carbs: 4, fat: 12, fiber: 0 },
     },
     {
         title: 'Huevos Rancheros',
@@ -86,6 +88,7 @@ const recipes = [
             { order: 4, instruction: 'Make four wells in the salsa and crack an egg into each. Cover and cook 4–5 minutes until whites are set.' },
             { order: 5, instruction: 'Serve eggs and salsa over tortillas with black beans alongside. Top with fresh coriander.' },
         ],
+        nutrition: { calories: 450, protein: 22, carbs: 38, fat: 22, fiber: 8 },
     },
     {
         title: 'High-Protein Banana Pancakes',
@@ -110,6 +113,7 @@ const recipes = [
             { order: 4, instruction: 'Cook 2–3 minutes until bubbles form on the surface and edges look set. Flip and cook 1–2 minutes more.' },
             { order: 5, instruction: 'Serve stacked with Greek yogurt, fresh fruit, or a drizzle of honey.' },
         ],
+        nutrition: { calories: 380, protein: 28, carbs: 40, fat: 10, fiber: 3 },
     },
     {
         title: 'Smoked Salmon & Avocado Toast',
@@ -136,6 +140,7 @@ const recipes = [
             { order: 4, instruction: 'Lay smoked salmon on top, scatter capers and thinly sliced red onion.' },
             { order: 5, instruction: 'Finish with everything bagel seasoning and a final squeeze of lemon.' },
         ],
+        nutrition: { calories: 420, protein: 24, carbs: 30, fat: 22, fiber: 6 },
     },
 
     // ─── LUNCH ────────────────────────────────────────────────────────
@@ -165,6 +170,7 @@ const recipes = [
             { order: 4, instruction: 'Add sliced shallots, spring onions, mint, coriander, and toasted rice powder. Toss again.' },
             { order: 5, instruction: 'Taste and adjust fish sauce/lime balance. Serve with lettuce cups, sticky rice, or cucumber.' },
         ],
+        nutrition: { calories: 260, protein: 30, carbs: 10, fat: 10, fiber: 2 },
     },
     {
         title: 'Korean Bibimbap',
@@ -193,6 +199,7 @@ const recipes = [
             { order: 4, instruction: 'Divide warm rice into bowls. Arrange beef and all vegetables in sections around the bowl.' },
             { order: 5, instruction: 'Top each bowl with a fried egg and a generous dollop of gochujang. Mix everything together before eating.' },
         ],
+        nutrition: { calories: 520, protein: 26, carbs: 68, fat: 14, fiber: 6 },
     },
     {
         title: 'Greek Chicken Souvlaki Wraps',
@@ -221,6 +228,7 @@ const recipes = [
             { order: 4, instruction: 'Warm pitas in a dry pan or directly over a gas flame for 30 seconds per side.' },
             { order: 5, instruction: 'Spread tzatziki on pita, add chicken, sliced tomato, red onion, and wrap tightly.' },
         ],
+        nutrition: { calories: 480, protein: 38, carbs: 40, fat: 16, fiber: 4 },
     },
     {
         title: 'Vietnamese Beef Pho',
@@ -249,6 +257,7 @@ const recipes = [
             { order: 4, instruction: 'Freeze the sirloin 20 minutes for easier slicing, then slice paper-thin against the grain.' },
             { order: 5, instruction: 'Ladle boiling broth into bowls over the noodles — this cooks the raw beef. Top with bean sprouts, basil, and lime.' },
         ],
+        nutrition: { calories: 380, protein: 28, carbs: 44, fat: 8, fiber: 3 },
     },
     {
         title: 'Turkish Red Lentil Soup',
@@ -277,6 +286,7 @@ const recipes = [
             { order: 4, instruction: 'For the finish: heat olive oil with paprika and dried mint until sizzling, pour swirl over each bowl.' },
             { order: 5, instruction: 'Serve with crusty bread and extra lemon wedges.' },
         ],
+        nutrition: { calories: 260, protein: 14, carbs: 40, fat: 5, fiber: 12 },
     },
 
     // ─── DINNER ──────────────────────────────────────────────────────
@@ -308,6 +318,7 @@ const recipes = [
             { order: 4, instruction: 'Cover and simmer on low heat 35–40 minutes until chicken is very tender and sauce is rich.' },
             { order: 5, instruction: 'Scatter fresh coriander and serve with couscous or flatbread.' },
         ],
+        nutrition: { calories: 420, protein: 36, carbs: 28, fat: 14, fiber: 6 },
     },
     {
         title: 'Butter Chicken (Murgh Makhani)',
@@ -337,6 +348,7 @@ const recipes = [
             { order: 4, instruction: 'Return sauce to pan, add cream and chicken. Simmer 10 minutes. Adjust salt and add a final tablespoon of butter for richness.' },
             { order: 5, instruction: 'Serve with basmati rice and naan, garnished with a swirl of cream and fresh coriander.' },
         ],
+        nutrition: { calories: 480, protein: 32, carbs: 18, fat: 28, fiber: 4 },
     },
     {
         title: 'Spanish Chicken Paella',
@@ -366,6 +378,7 @@ const recipes = [
             { order: 4, instruction: 'Bring to a boil then reduce to medium-low. Cook uncovered 18–20 minutes — do not stir. Add peas in the last 5 minutes.' },
             { order: 5, instruction: 'When liquid is absorbed and rice is tender, remove from heat, cover with foil for 5 minutes. Serve with lemon wedges.' },
         ],
+        nutrition: { calories: 520, protein: 34, carbs: 58, fat: 14, fiber: 4 },
     },
     {
         title: 'Teriyaki Salmon',
@@ -392,6 +405,7 @@ const recipes = [
             { order: 4, instruction: 'Pour in the teriyaki sauce. Reduce heat to medium and spoon sauce over salmon as it thickens, about 2 minutes.' },
             { order: 5, instruction: 'Serve over steamed rice, garnished with sesame seeds and sliced spring onions.' },
         ],
+        nutrition: { calories: 380, protein: 34, carbs: 22, fat: 14, fiber: 1 },
     },
     {
         title: 'Kung Pao Chicken',
@@ -421,6 +435,7 @@ const recipes = [
             { order: 4, instruction: 'In the same wok, fry dried chilies 30 seconds, then add garlic and ginger and toss 30 seconds.' },
             { order: 5, instruction: 'Return chicken, pour in sauce, add peanuts and spring onions, toss everything 1 minute. Serve over rice.' },
         ],
+        nutrition: { calories: 380, protein: 34, carbs: 24, fat: 16, fiber: 3 },
     },
     {
         title: 'Lebanese Kafta with Bulgur',
@@ -449,6 +464,7 @@ const recipes = [
             { order: 4, instruction: 'Grill or pan-fry kafta over high heat 4–5 minutes per side until nicely charred and cooked through.' },
             { order: 5, instruction: 'Serve kafta over bulgur with yogurt on the side and a tomato-cucumber salad.' },
         ],
+        nutrition: { calories: 460, protein: 30, carbs: 36, fat: 18, fiber: 6 },
     },
     {
         title: 'Italian Chicken Piccata',
@@ -477,6 +493,7 @@ const recipes = [
             { order: 4, instruction: 'Add stock, lemon juice, and capers. Simmer 4 minutes to reduce by a third.' },
             { order: 5, instruction: 'Remove from heat, whisk in remaining butter. Return chicken to coat in the sauce. Garnish with parsley and lemon slices.' },
         ],
+        nutrition: { calories: 380, protein: 36, carbs: 10, fat: 20, fiber: 1 },
     },
 
     // ─── SNACK ───────────────────────────────────────────────────────
@@ -505,6 +522,7 @@ const recipes = [
             { order: 4, instruction: 'Taste and adjust lemon and salt.' },
             { order: 5, instruction: 'Spread into a bowl, drizzle with olive oil, dust with paprika, and top with reserved chickpeas. Serve with pita or vegetables.' },
         ],
+        nutrition: { calories: 120, protein: 8, carbs: 14, fat: 5, fiber: 4 },
     },
     {
         title: 'Cottage Cheese & Berry Bowl',
@@ -527,6 +545,7 @@ const recipes = [
             { order: 2, instruction: 'Top with berries, roughly chopped walnuts, and chia seeds.' },
             { order: 3, instruction: 'Drizzle with honey and finish with a pinch of cinnamon.' },
         ],
+        nutrition: { calories: 220, protein: 22, carbs: 24, fat: 5, fiber: 4 },
     },
     {
         title: 'Turkey & Cheese Roll-Ups',
@@ -550,6 +569,7 @@ const recipes = [
             { order: 3, instruction: 'Place a strip of cucumber, bell pepper, and a few spinach leaves at one end.' },
             { order: 4, instruction: 'Roll tightly, secure with a toothpick if needed, and dust with bagel seasoning.' },
         ],
+        nutrition: { calories: 180, protein: 22, carbs: 4, fat: 8, fiber: 0 },
     },
     {
         title: 'Edamame with Sea Salt & Chili',
@@ -572,6 +592,7 @@ const recipes = [
             { order: 3, instruction: 'Toss immediately with sesame oil, sea salt, and chili flakes.' },
             { order: 4, instruction: 'Scatter sesame seeds over the top. Serve warm — eat by squeezing the beans out of the pods.' },
         ],
+        nutrition: { calories: 150, protein: 13, carbs: 12, fat: 6, fiber: 6 },
     },
 
     // ─── DESSERT ────────────────────────────────────────────────────
@@ -597,6 +618,7 @@ const recipes = [
             { order: 3, instruction: 'Spoon into glasses and refrigerate 30 minutes for a firmer set, or eat immediately for soft-serve texture.' },
             { order: 4, instruction: 'Top with dark chocolate chips and a light dusting of cocoa powder before serving.' },
         ],
+        nutrition: { calories: 180, protein: 22, carbs: 16, fat: 4, fiber: 2 },
     },
     {
         title: 'Greek Yogurt Bark with Berries',
@@ -621,6 +643,7 @@ const recipes = [
             { order: 4, instruction: 'Melt dark chocolate and drizzle over the top.' },
             { order: 5, instruction: 'Freeze for at least 3 hours until solid. Break into shards and store in a sealed bag in the freezer.' },
         ],
+        nutrition: { calories: 130, protein: 10, carbs: 18, fat: 3, fiber: 1 },
     },
     {
         title: 'Peanut Butter Banana Nice Cream',
@@ -643,6 +666,7 @@ const recipes = [
             { order: 3, instruction: 'Process, stopping to scrape down the sides, until smooth and creamy — about 2 minutes.' },
             { order: 4, instruction: 'Eat immediately for soft-serve consistency, or freeze 1 hour for a firmer scoop. Top with dark chocolate chips.' },
         ],
+        nutrition: { calories: 280, protein: 8, carbs: 42, fat: 10, fiber: 4 },
     },
     {
         title: 'Ricotta Lemon Cheesecake Cups',
@@ -667,6 +691,7 @@ const recipes = [
             { order: 3, instruction: 'Spoon ricotta mixture on top of the chilled biscuit base.' },
             { order: 4, instruction: 'Top with blueberries and a little extra lemon zest. Refrigerate 30 minutes before serving.' },
         ],
+        nutrition: { calories: 260, protein: 12, carbs: 26, fat: 12, fiber: 1 },
     },
 ]
 
@@ -688,6 +713,7 @@ async function main() {
                 // userId omitted → defaults to null, making these presets
                 ingredients: { create: recipe.ingredients },
                 steps: { create: recipe.steps },
+                ...(recipe.nutrition ? { nutrition: { create: recipe.nutrition } } : {}),
             },
         })
         created++

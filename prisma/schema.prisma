@@ -156,6 +156,11 @@ model UserGoal {
   carbGoal      Int      @default(200)
   fatGoal       Int      @default(65)
   activityLevel String   @default("moderate")
+  age           Int?
+  height        Float?
+  weight        Float?
+  gender        String?
+  goalType      String?
   userId        String   @unique
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   updatedAt     DateTime @updatedAt

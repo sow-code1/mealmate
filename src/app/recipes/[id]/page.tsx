@@ -233,7 +233,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                 {/* Header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                     <div>
-                        <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.8rem', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                        <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.8rem', color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                             Cooking Mode
                         </p>
                         <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.4rem', fontWeight: 700, color: 'var(--foreground)' }}>
@@ -301,7 +301,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                                         </button>
                                     ) : (
                                         <button onClick={() => pauseTimer(currentStep.order)} style={{
-                                            background: 'var(--accent)', color: 'white', border: 'none',
+                                            background: 'var(--foreground)', color: 'white', border: 'none',
                                             borderRadius: 'var(--radius-sm)', padding: '0.5rem 1.25rem',
                                             fontFamily: 'DM Sans, sans-serif', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem',
                                         }}>
@@ -730,7 +730,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                                                 </button>
                                             ) : (
                                                 <button onClick={(e) => { e.stopPropagation(); pauseTimer(step.order) }} style={{
-                                                    background: 'var(--accent)', color: 'white', border: 'none',
+                                                    background: 'var(--foreground)', color: 'white', border: 'none',
                                                     borderRadius: 'var(--radius-sm)', padding: '0.4rem 0.9rem',
                                                     fontFamily: 'DM Sans, sans-serif', fontWeight: 600, cursor: 'pointer', fontSize: '0.8rem',
                                                 }}>

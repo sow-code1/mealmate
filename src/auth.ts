@@ -14,7 +14,7 @@ async function copyPresetsToUser(userId: string) {
 
     const presets = await prisma.recipe.findMany({
         where: { isPublic: true, userId: null },
-        include: { ingredients: true, steps: true },
+        include: { ingredients: true, steps: true, nutrition: true },
     })
 
     for (const preset of presets) {
@@ -44,6 +44,17 @@ async function copyPresetsToUser(userId: string) {
                         instruction: s.instruction,
                     })),
                 },
+                ...(preset.nutrition ? {
+                    nutrition: {
+                        create: {
+                            calories: preset.nutrition.calories,
+                            protein: preset.nutrition.protein,
+                            carbs: preset.nutrition.carbs,
+                            fat: preset.nutrition.fat,
+                            fiber: preset.nutrition.fiber,
+                        },
+                    },
+                } : {}),
             },
         })
     }

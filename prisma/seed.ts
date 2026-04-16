@@ -13,7 +13,7 @@ async function main() {
 
     await prisma.recipe.createMany({ data: [] })
 
-    const pasta = await prisma.recipe.create({
+    await prisma.recipe.create({
         data: {
             title: 'Spaghetti Carbonara',
             description: 'A classic Italian pasta dish with eggs, cheese, and pancetta.',
@@ -21,6 +21,7 @@ async function main() {
             cookTime: 20,
             servings: 4,
             category: 'Dinner',
+            isPublic: true,
             ingredients: {
                 create: [
                     { name: 'Spaghetti', amount: '400', unit: 'g' },
@@ -39,10 +40,11 @@ async function main() {
                     { order: 5, instruction: 'Season with black pepper and serve immediately.' },
                 ],
             },
+            nutrition: { create: { calories: 620, protein: 26, carbs: 70, fat: 27, fiber: 3 } },
         },
     })
 
-    const chicken = await prisma.recipe.create({
+    await prisma.recipe.create({
         data: {
             title: 'Honey Garlic Chicken',
             description: 'Sticky, sweet, and savory chicken thighs ready in 30 minutes.',
@@ -50,6 +52,7 @@ async function main() {
             cookTime: 25,
             servings: 4,
             category: 'Dinner',
+            isPublic: true,
             ingredients: {
                 create: [
                     { name: 'Chicken thighs', amount: '600', unit: 'g' },
@@ -67,10 +70,11 @@ async function main() {
                     { order: 4, instruction: 'Pour sauce over chicken and simmer 10 minutes until sticky.' },
                 ],
             },
+            nutrition: { create: { calories: 380, protein: 35, carbs: 20, fat: 15, fiber: 1 } },
         },
     })
 
-    const oats = await prisma.recipe.create({
+    await prisma.recipe.create({
         data: {
             title: 'Overnight Oats',
             description: 'Easy high-protein breakfast you prep the night before.',
@@ -78,6 +82,7 @@ async function main() {
             cookTime: 0,
             servings: 1,
             category: 'Breakfast',
+            isPublic: true,
             ingredients: {
                 create: [
                     { name: 'Rolled oats', amount: '80', unit: 'g' },
@@ -95,10 +100,11 @@ async function main() {
                     { order: 4, instruction: 'Top with sliced banana before eating.' },
                 ],
             },
+            nutrition: { create: { calories: 460, protein: 18, carbs: 72, fat: 10, fiber: 7 } },
         },
     })
 
-    const stirfry = await prisma.recipe.create({
+    await prisma.recipe.create({
         data: {
             title: 'Egg Fried Rice',
             description: 'Quick and satisfying fried rice with eggs and vegetables.',
@@ -106,6 +112,7 @@ async function main() {
             cookTime: 15,
             servings: 2,
             category: 'Lunch',
+            isPublic: true,
             ingredients: {
                 create: [
                     { name: 'Cooked rice', amount: '300', unit: 'g' },
@@ -124,10 +131,11 @@ async function main() {
                     { order: 5, instruction: 'Garnish with spring onions and serve.' },
                 ],
             },
+            nutrition: { create: { calories: 420, protein: 15, carbs: 58, fat: 14, fiber: 2 } },
         },
     })
 
-    const smoothie = await prisma.recipe.create({
+    await prisma.recipe.create({
         data: {
             title: 'Protein Smoothie',
             description: 'Post-workout banana protein smoothie.',
@@ -135,6 +143,7 @@ async function main() {
             cookTime: 0,
             servings: 1,
             category: 'Snack',
+            isPublic: true,
             ingredients: {
                 create: [
                     { name: 'Banana', amount: '1', unit: '' },
@@ -151,6 +160,7 @@ async function main() {
                     { order: 3, instruction: 'Pour and drink immediately.' },
                 ],
             },
+            nutrition: { create: { calories: 380, protein: 30, carbs: 42, fat: 8, fiber: 3 } },
         },
     })
 
