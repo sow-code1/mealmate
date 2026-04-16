@@ -39,6 +39,8 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
     })
     const [ingredients, setIngredients] = useState([{ name: '', amount: '', unit: '' }])
     const [steps, setSteps] = useState([{ instruction: '' }])
+    const [nutrition, setNutrition] = useState({ calories: '', protein: '', carbs: '', fat: '', fiber: '' })
+    const [savingNutrition, setSavingNutrition] = useState(false)
 
     useEffect(() => {
         params.then(({ id }) => {
@@ -61,6 +63,15 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                     setSteps(recipe.steps?.map((s: { instruction: string }) => ({
                         instruction: s.instruction,
                     })) ?? [{ instruction: '' }])
+                    if (recipe.nutrition) {
+                        setNutrition({
+                            calories: String(recipe.nutrition.calories ?? ''),
+                            protein: String(recipe.nutrition.protein ?? ''),
+                            carbs: String(recipe.nutrition.carbs ?? ''),
+                            fat: String(recipe.nutrition.fat ?? ''),
+                            fiber: String(recipe.nutrition.fiber ?? ''),
+                        })
+                    }
                     setLoading(false)
                 })
                 .catch(() => toast.error('Failed to load recipe'))
@@ -77,6 +88,30 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
         const updated = [...steps]
         updated[i].instruction = value
         setSteps(updated)
+    }
+
+    const handleSaveNutrition = async () => {
+        if (!nutrition.calories) { toast.error('Calories are required'); return }
+        setSavingNutrition(true)
+        try {
+            const res = await fetch(`/api/recipes/${id}/nutrition`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    calories: parseFloat(nutrition.calories) || 0,
+                    protein: parseFloat(nutrition.protein) || 0,
+                    carbs: parseFloat(nutrition.carbs) || 0,
+                    fat: parseFloat(nutrition.fat) || 0,
+                    fiber: parseFloat(nutrition.fiber) || 0,
+                }),
+            })
+            if (!res.ok) throw new Error()
+            toast.success('Nutrition saved!')
+        } catch {
+            toast.error('Failed to save nutrition')
+        } finally {
+            setSavingNutrition(false)
+        }
     }
 
     const handleSave = async () => {
@@ -192,6 +227,51 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                     <button onClick={() => setSteps([...steps, { instruction: '' }])} style={{ marginTop: '0.75rem', background: 'none', border: 'none', color: 'var(--primary)', fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', padding: 0 }}>
                         + Add step
                     </button>
+                </div>
+
+                {/* Nutrition info */}
+                <div style={{ background: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 'var(--radius)', padding: '1.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                        <div>
+                            <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.05rem', fontWeight: 600, color: 'var(--foreground)' }}>
+                                Nutrition Info <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.78rem', fontWeight: 400, color: 'var(--muted)' }}>(per serving, optional)</span>
+                            </h2>
+                        </div>
+                        <button
+                            onClick={handleSaveNutrition}
+                            disabled={savingNutrition}
+                            style={{
+                                padding: '0.4rem 0.9rem', border: 'none', borderRadius: 'var(--radius-sm)',
+                                fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '0.8rem',
+                                background: 'var(--primary)', color: 'white', cursor: savingNutrition ? 'not-allowed' : 'pointer',
+                                opacity: savingNutrition ? 0.6 : 1,
+                            }}
+                        >
+                            {savingNutrition ? 'Saving...' : 'Save Nutrition'}
+                        </button>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
+                        {[
+                            { key: 'calories', label: 'Calories (kcal)', color: 'var(--primary)' },
+                            { key: 'protein', label: 'Protein (g)', color: '#3b82f6' },
+                            { key: 'carbs', label: 'Carbs (g)', color: 'var(--accent)' },
+                            { key: 'fat', label: 'Fat (g)', color: '#a855f7' },
+                            { key: 'fiber', label: 'Fiber (g)', color: '#16a34a' },
+                        ].map(({ key, label, color }) => (
+                            <div key={key}>
+                                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', color, marginBottom: '0.3rem' }}>
+                                    {label}
+                                </label>
+                                <input
+                                    type="number" min="0" step="0.1"
+                                    style={inputStyle}
+                                    value={nutrition[key as keyof typeof nutrition]}
+                                    onChange={e => setNutrition(p => ({ ...p, [key]: e.target.value }))}
+                                    placeholder="0"
+                                />
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.75rem' }}>

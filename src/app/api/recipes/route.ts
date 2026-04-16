@@ -9,12 +9,14 @@ export async function GET(request: NextRequest) {
 
         const isMealPlanner = request.nextUrl.searchParams.get('mealplanner') === 'true'
 
+        const withNutrition = request.nextUrl.searchParams.get('nutrition') === 'true'
         const recipes = await prisma.recipe.findMany({
             where: {
                 userId: session.user.id,
                 deleted: false,
             },
             orderBy: { createdAt: 'desc' },
+            include: withNutrition ? { nutrition: true } : undefined,
         })
         return NextResponse.json(recipes)
     } catch (error) {

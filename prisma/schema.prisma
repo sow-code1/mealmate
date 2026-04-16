@@ -19,6 +19,8 @@ model User {
   recipes       Recipe[]
   hiddenRecipes HiddenRecipe[]
   mealPlans     MealPlan[]
+  goal          UserGoal?
+  foodEntries   FoodEntry[]
 }
 
 model Account {
@@ -84,6 +86,8 @@ model Recipe {
   steps            Step[]
   mealSlots        MealSlot[]
   hiddenByUsers    HiddenRecipe[]
+  nutrition        NutritionInfo?
+  foodEntries      FoodEntry[]
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 }
@@ -132,4 +136,46 @@ model MealSlot {
   recipeId   Int?
   mealPlan   MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
   mealPlanId Int
+}
+
+model NutritionInfo {
+  id       Int    @id @default(autoincrement())
+  calories Float
+  protein  Float  @default(0)
+  carbs    Float  @default(0)
+  fat      Float  @default(0)
+  fiber    Float  @default(0)
+  recipeId Int    @unique
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+
+model UserGoal {
+  id            Int      @id @default(autoincrement())
+  calorieGoal   Int      @default(2000)
+  proteinGoal   Int      @default(150)
+  carbGoal      Int      @default(200)
+  fatGoal       Int      @default(65)
+  activityLevel String   @default("moderate")
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt     DateTime @updatedAt
+}
+
+model FoodEntry {
+  id        Int      @id @default(autoincrement())
+  date      String
+  mealType  String
+  label     String
+  calories  Float
+  protein   Float    @default(0)
+  carbs     Float    @default(0)
+  fat       Float    @default(0)
+  servings  Float    @default(1)
+  recipeId  Int?
+  recipe    Recipe?  @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([userId, date])
 }

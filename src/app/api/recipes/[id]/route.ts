@@ -20,6 +20,7 @@ export async function GET(
                 ingredients: true,
                 steps: { orderBy: { order: 'asc' } },
                 user: { select: { name: true, email: true } },
+                nutrition: true,
             },
         })
         if (!recipe) return NextResponse.json({ error: 'Recipe not found' }, { status: 404 })

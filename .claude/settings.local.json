@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsx *)",
+      "Bash(cat -n C:/Users/hamza/caloracle/src/app/recipes/[id]/page.tsx)",
+      "Bash(cat -n C:/Users/hamza/caloracle/src/app/recipes/[id]/edit/page.tsx)",
+      "Bash(cat -n C:/Users/hamza/caloracle/src/app/api/recipes/[id]/route.ts)",
+      "Bash(npx prisma *)"
+    ]
+  }
+}

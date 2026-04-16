@@ -20,6 +20,14 @@ interface Step {
     instruction: string
 }
 
+interface NutritionInfo {
+    calories: number
+    protein: number
+    carbs: number
+    fat: number
+    fiber: number
+}
+
 interface Recipe {
     id: number
     title: string
@@ -35,6 +43,7 @@ interface Recipe {
     user: { name: string | null; email: string | null } | null
     ingredients: Ingredient[]
     steps: Step[]
+    nutrition: NutritionInfo | null
 }
 
 function useTimer() {
@@ -93,6 +102,9 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
     const [checkedIngredients, setCheckedIngredients] = useState<Set<number>>(new Set())
     const [activeStep, setActiveStep] = useState<number | null>(null)
     const [cookingMode, setCookingMode] = useState(false)
+    const [showLogModal, setShowLogModal] = useState(false)
+    const [logForm, setLogForm] = useState({ mealType: 'Dinner', servings: '1' })
+    const [logging, setLogging] = useState(false)
     const ingredientRefs = useRef<Record<number, HTMLDivElement | null>>({})
     const { timers, startTimer, resetTimer, pauseTimer } = useTimer()
 
@@ -156,6 +168,39 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
         } catch {
             toast.error('Failed to delete recipe')
             setActing(false)
+        }
+    }
+
+    const handleLog = async () => {
+        if (!recipe) return
+        const servings = parseFloat(logForm.servings) || 1
+        const n = recipe.nutrition
+        setLogging(true)
+        try {
+            const today = new Date()
+            const date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+            const res = await fetch('/api/nutrition/log', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    date,
+                    mealType: logForm.mealType.toLowerCase(),
+                    label: recipe.title,
+                    calories: n ? Math.round(n.calories * servings) : 0,
+                    protein: n ? Math.round(n.protein * servings) : 0,
+                    carbs: n ? Math.round(n.carbs * servings) : 0,
+                    fat: n ? Math.round(n.fat * servings) : 0,
+                    servings,
+                    recipeId: recipe.id,
+                }),
+            })
+            if (!res.ok) throw new Error()
+            toast.success('Logged to nutrition diary!')
+            setShowLogModal(false)
+        } catch {
+            toast.error('Failed to log meal')
+        } finally {
+            setLogging(false)
         }
     }
 
@@ -402,6 +447,19 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                 )}
 
                 <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                    {/* Log meal button */}
+                    {session && (
+                        <button onClick={() => setShowLogModal(true)} style={{
+                            padding: '0.55rem 1.25rem', border: 'none',
+                            borderRadius: 'var(--radius-sm)',
+                            fontFamily: 'DM Sans, sans-serif', fontWeight: 600,
+                            fontSize: '0.85rem', color: 'white',
+                            background: 'var(--accent)', cursor: 'pointer',
+                            transition: 'background 0.15s ease',
+                        }}>
+                            🔥 Log Meal
+                        </button>
+                    )}
                     {/* Cooking mode button */}
                     <button onClick={() => { setActiveStep(1); setCookingMode(true) }} style={{
                         padding: '0.55rem 1.25rem', border: 'none',
@@ -459,6 +517,33 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                 ))}
             </div>
 
+            {/* Nutrition panel */}
+            {recipe.nutrition && (
+                <div style={{
+                    background: 'var(--card)', border: '1px solid var(--card-border)',
+                    borderRadius: 'var(--radius)', padding: '1.25rem 1.5rem',
+                    marginBottom: '1.5rem', boxShadow: 'var(--shadow-sm)',
+                }}>
+                    <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.72rem', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.85rem' }}>
+                        Nutrition per serving
+                    </p>
+                    <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap' }}>
+                        {[
+                            { label: 'Calories', value: `${Math.round(recipe.nutrition.calories)} kcal`, color: 'var(--primary)' },
+                            { label: 'Protein', value: `${Math.round(recipe.nutrition.protein)}g`, color: '#3b82f6' },
+                            { label: 'Carbs', value: `${Math.round(recipe.nutrition.carbs)}g`, color: 'var(--accent)' },
+                            { label: 'Fat', value: `${Math.round(recipe.nutrition.fat)}g`, color: '#a855f7' },
+                            ...(recipe.nutrition.fiber > 0 ? [{ label: 'Fiber', value: `${Math.round(recipe.nutrition.fiber)}g`, color: '#16a34a' }] : []),
+                        ].map(({ label, value, color }) => (
+                            <div key={label} style={{ textAlign: 'center', minWidth: 60 }}>
+                                <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.15rem', fontWeight: 700, color }}>{value}</div>
+                                <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.68rem', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 2 }}>{label}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Ingredients */}
             <div style={{
                 background: 'var(--card)', border: '1px solid var(--card-border)',
@@ -511,6 +596,70 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                     })}
                 </div>
             </div>
+
+            {/* Log meal modal */}
+            {showLogModal && (
+                <div
+                    onClick={e => { if (e.target === e.currentTarget) setShowLogModal(false) }}
+                    className="modal-backdrop"
+                >
+                    <div className="modal-panel" style={{ maxWidth: 380 }}>
+                        <button onClick={() => setShowLogModal(false)} className="modal-close">✕</button>
+                        <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.35rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '0.3rem' }}>
+                            Log this meal
+                        </h2>
+                        <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.82rem', color: 'var(--muted)', marginBottom: '1.25rem' }}>
+                            {recipe.title}
+                            {recipe.nutrition && ` · ${Math.round(recipe.nutrition.calories)} kcal/serving`}
+                        </p>
+                        {!recipe.nutrition && (
+                            <div style={{ background: 'var(--accent-light)', border: '1px solid var(--accent)', borderRadius: 'var(--radius-sm)', padding: '0.75rem', marginBottom: '1rem', fontFamily: 'DM Sans, sans-serif', fontSize: '0.8rem', color: 'var(--foreground)' }}>
+                                ⚠️ No nutrition info on this recipe. Calories will be logged as 0.{' '}
+                                {id && <a href={`/recipes/${id}/edit`} style={{ color: 'var(--primary)', fontWeight: 600 }}>Add nutrition →</a>}
+                            </div>
+                        )}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', color: 'var(--foreground)', marginBottom: '0.4rem' }}>
+                                    Meal Type
+                                </label>
+                                <select
+                                    style={{ width: '100%', border: '1px solid var(--card-border)', borderRadius: 'var(--radius-sm)', padding: '0.6rem 0.85rem', fontSize: '0.9rem', fontFamily: 'DM Sans, sans-serif', color: 'var(--foreground)', background: 'var(--background)', outline: 'none' }}
+                                    value={logForm.mealType}
+                                    onChange={e => setLogForm(p => ({ ...p, mealType: e.target.value }))}
+                                >
+                                    {['Breakfast', 'Lunch', 'Dinner', 'Snack'].map(m => <option key={m} value={m}>{m}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', color: 'var(--foreground)', marginBottom: '0.4rem' }}>
+                                    Servings
+                                </label>
+                                <input type="number" min="0.5" step="0.5"
+                                    style={{ width: '100%', border: '1px solid var(--card-border)', borderRadius: 'var(--radius-sm)', padding: '0.6rem 0.85rem', fontSize: '0.9rem', fontFamily: 'DM Sans, sans-serif', color: 'var(--foreground)', background: 'var(--background)', outline: 'none' }}
+                                    value={logForm.servings}
+                                    onChange={e => setLogForm(p => ({ ...p, servings: e.target.value }))}
+                                />
+                            </div>
+                            {recipe.nutrition && (
+                                <div style={{ background: 'var(--primary-light)', borderRadius: 'var(--radius-sm)', padding: '0.75rem 1rem', fontFamily: 'DM Sans, sans-serif', fontSize: '0.82rem', color: 'var(--foreground)' }}>
+                                    Total: <strong>{Math.round(recipe.nutrition.calories * (parseFloat(logForm.servings) || 1))} kcal</strong>
+                                    {' '}· P {Math.round(recipe.nutrition.protein * (parseFloat(logForm.servings) || 1))}g
+                                    · C {Math.round(recipe.nutrition.carbs * (parseFloat(logForm.servings) || 1))}g
+                                    · F {Math.round(recipe.nutrition.fat * (parseFloat(logForm.servings) || 1))}g
+                                </div>
+                            )}
+                            <button
+                                onClick={handleLog} disabled={logging}
+                                className="btn-primary"
+                                style={{ width: '100%', border: 'none', textAlign: 'center', opacity: logging ? 0.6 : 1, cursor: logging ? 'not-allowed' : 'pointer' }}
+                            >
+                                {logging ? 'Logging...' : '🔥 Log to Diary'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Steps */}
             <div style={{

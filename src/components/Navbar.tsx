@@ -19,6 +19,7 @@ export default function Navbar() {
         { href: '/recipes', label: 'Recipes' },
         { href: '/mealplan', label: 'Meal Planner' },
         { href: '/grocery', label: 'Grocery List' },
+        { href: '/nutrition', label: 'Nutrition' },
         ...(isAdmin ? [
             { href: '/admin/users', label: 'Users' },
             { href: '/admin/hidden', label: 'Hidden' },
