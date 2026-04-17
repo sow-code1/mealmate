@@ -108,9 +108,9 @@ export default function MealPlannerPage() {
 
     return (
         <>
-            <div style={{ maxWidth: '100%', padding: '2rem 1.5rem 2rem', minHeight: 'calc(100vh - 64px)', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ maxWidth: '100%', padding: '2.5rem 1.5rem 4rem' }}>
                 {/* Header */}
-                <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
                     <div>
                         <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.8rem, 4vw, 2.4rem)', fontWeight: 700, color: 'var(--foreground)', marginBottom: '0.3rem' }}>
                             Weekly Meal Plan
@@ -125,10 +125,10 @@ export default function MealPlannerPage() {
                 </div>
 
                 {/* Grid */}
-                <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', flex: 1, overflowX: 'auto', display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ minWidth: 700, flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div style={{ maxWidth: 1200, margin: '0 auto', overflowX: 'auto', paddingBottom: '1rem' }}>
+                    <div style={{ minWidth: 700 }}>
                         {/* Day headers */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '90px repeat(7, 1fr)', gap: '0.5rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '90px repeat(7, 1fr)', gap: '0.5rem', marginBottom: '0.5rem' }}>
                             <div />
                             {DAYS.map((day, i) => {
                                 const isWeekend = i >= 5
@@ -149,7 +149,7 @@ export default function MealPlannerPage() {
 
                         {/* Meal rows */}
                         {MEAL_TYPES.map(mealType => (
-                            <div key={mealType} style={{ flex: 1, display: 'grid', gridTemplateColumns: '90px repeat(7, 1fr)', gap: '0.5rem' }}>
+                            <div key={mealType} style={{ display: 'grid', gridTemplateColumns: '90px repeat(7, 1fr)', gap: '0.5rem', marginBottom: '0.5rem' }}>
                                 {/* Meal type label */}
                                 <div style={{
                                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -168,7 +168,7 @@ export default function MealPlannerPage() {
                                     const colors = CATEGORY_COLORS[cat] ?? CATEGORY_COLORS.default
 
                                     return (
-                                        <div key={day} style={{ minHeight: 100 }}>
+                                        <div key={day} style={{ minHeight: 80 }}>
                                             {slot?.recipe ? (
                                                 <div style={{
                                                     height: '100%', minHeight: 80,

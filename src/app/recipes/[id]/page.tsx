@@ -228,44 +228,44 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
             <div style={{
                 position: 'fixed', inset: 0, background: 'var(--background)',
                 zIndex: 100, display: 'flex', flexDirection: 'column',
-                padding: '2rem 1.5rem', overflowY: 'auto',
+                padding: '1.5rem 1.5rem 0',
             }}>
                 {/* Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                    <div>
-                        <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.8rem', color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', gap: '1rem' }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.75rem', color: 'var(--primary-hover)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600, marginBottom: '0.2rem' }}>
                             Cooking Mode
                         </p>
-                        <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.4rem', fontWeight: 700, color: 'var(--foreground)' }}>
+                        <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.1rem, 3vw, 1.4rem)', fontWeight: 700, color: 'var(--foreground)', wordBreak: 'break-word', margin: 0 }}>
                             {recipe.title}
                         </h2>
                     </div>
                     <button onClick={() => setCookingMode(false)} style={{
-                        background: 'var(--muted-light)', border: 'none', borderRadius: 'var(--radius-sm)',
-                        padding: '0.5rem 1rem', fontFamily: 'DM Sans, sans-serif', fontWeight: 600,
-                        fontSize: '0.85rem', color: 'var(--foreground)', cursor: 'pointer',
+                        background: 'var(--muted-light)', border: '1px solid var(--card-border)', borderRadius: 'var(--radius-sm)',
+                        padding: '0.45rem 1rem', fontFamily: 'DM Sans, sans-serif', fontWeight: 600,
+                        fontSize: '0.85rem', color: 'var(--foreground)', cursor: 'pointer', flexShrink: 0,
                     }}>
                         Exit
                     </button>
                 </div>
 
                 {/* Step progress */}
-                <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '1.25rem' }}>
                     {recipe.steps.map((_, i) => (
                         <div key={i} onClick={() => setActiveStep(i + 1)} style={{
-                            flex: 1, height: 4, borderRadius: 999, cursor: 'pointer',
-                            background: i < (activeStep ?? 1) ? 'var(--primary)' : 'var(--card-border)',
+                            flex: 1, height: 5, borderRadius: 999, cursor: 'pointer',
+                            background: i < (activeStep ?? 1) ? 'var(--primary)' : '#d1cfc9',
                             transition: 'background 0.3s ease',
                         }} />
                     ))}
                 </div>
 
-                {/* Current step */}
+                {/* Current step — scrollable middle section */}
                 {currentStep && (
                     <div style={{
                         background: 'var(--card)', borderRadius: 'var(--radius-lg)',
-                        border: '1px solid var(--card-border)', padding: '2.5rem',
-                        marginBottom: '1.5rem', flex: 1,
+                        border: '1px solid var(--card-border)', padding: '2rem',
+                        flex: 1, overflowY: 'auto', marginBottom: '1rem',
                         boxShadow: 'var(--shadow-md)',
                     }}>
                         <div style={{
@@ -279,7 +279,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                         </div>
                         <p style={{
                             fontFamily: 'DM Sans, sans-serif', fontSize: 'clamp(1.1rem, 3vw, 1.4rem)',
-                            lineHeight: 1.7, color: 'var(--foreground)', fontWeight: 400,
+                            lineHeight: 1.7, color: 'var(--foreground)', fontWeight: 500,
                         }}>
                             {currentStep.instruction}
                         </p>
@@ -321,8 +321,8 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                     </div>
                 )}
 
-                {/* Navigation */}
-                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                {/* Navigation — always visible at bottom */}
+                <div style={{ display: 'flex', gap: '0.75rem', padding: '1rem 0 1.5rem', background: 'var(--background)', flexShrink: 0 }}>
                     <button
                         onClick={() => setActiveStep(Math.max(1, (activeStep ?? 1) - 1))}
                         disabled={(activeStep ?? 1) <= 1}
