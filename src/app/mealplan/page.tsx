@@ -108,7 +108,7 @@ export default function MealPlannerPage() {
 
     return (
         <>
-            <div style={{ maxWidth: '100%', padding: '2.5rem 1.5rem 4rem' }}>
+            <div style={{ maxWidth: '100%', padding: '2.5rem 1.5rem 4rem', display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 64px)' }}>
                 {/* Header */}
                 <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
                     <div>
@@ -125,8 +125,8 @@ export default function MealPlannerPage() {
                 </div>
 
                 {/* Grid */}
-                <div style={{ maxWidth: 1200, margin: '0 auto', overflowX: 'auto', paddingBottom: '1rem' }}>
-                    <div style={{ minWidth: 700 }}>
+                <div style={{ maxWidth: 1200, margin: '0 auto', overflowX: 'auto', paddingBottom: '1rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ minWidth: 700, flex: 1, display: 'flex', flexDirection: 'column' }}>
                         {/* Day headers */}
                         <div style={{ display: 'grid', gridTemplateColumns: '90px repeat(7, 1fr)', gap: '0.5rem', marginBottom: '0.5rem' }}>
                             <div />
@@ -148,8 +148,9 @@ export default function MealPlannerPage() {
                         </div>
 
                         {/* Meal rows */}
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         {MEAL_TYPES.map(mealType => (
-                            <div key={mealType} style={{ display: 'grid', gridTemplateColumns: '90px repeat(7, 1fr)', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                            <div key={mealType} style={{ display: 'grid', gridTemplateColumns: '90px repeat(7, 1fr)', gap: '0.5rem', flex: 1, minHeight: 80 }}>
                                 {/* Meal type label */}
                                 <div style={{
                                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -168,7 +169,7 @@ export default function MealPlannerPage() {
                                     const colors = CATEGORY_COLORS[cat] ?? CATEGORY_COLORS.default
 
                                     return (
-                                        <div key={day} style={{ minHeight: 80 }}>
+                                        <div key={day} style={{ minHeight: 80, height: '100%' }}>
                                             {slot?.recipe ? (
                                                 <div style={{
                                                     height: '100%', minHeight: 80,
@@ -237,6 +238,7 @@ export default function MealPlannerPage() {
                                 })}
                             </div>
                         ))}
+                        </div>
                     </div>
                 </div>
             </div>
