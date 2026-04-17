@@ -5,7 +5,37 @@
       "Bash(cat -n C:/Users/hamza/caloracle/src/app/recipes/[id]/page.tsx)",
       "Bash(cat -n C:/Users/hamza/caloracle/src/app/recipes/[id]/edit/page.tsx)",
       "Bash(cat -n C:/Users/hamza/caloracle/src/app/api/recipes/[id]/route.ts)",
-      "Bash(npx prisma *)"
+      "Bash(npx prisma *)",
+      "mcp__code-review-graph__build_or_update_graph_tool",
+      "mcp__code-review-graph__semantic_search_nodes_tool",
+      "mcp__plugin_claude-mem_mcp-search__get_observations",
+      "mcp__plugin_claude-mem_mcp-search__smart_outline",
+      "mcp__plugin_claude-mem_mcp-search__smart_search",
+      "Bash(sed -n '1,16p' \"C:/Users/hamza/caloracle/prisma/seed-more.ts\")",
+      "Bash(sed -n '660,707p' \"C:/Users/hamza/caloracle/prisma/seed-more.ts\")",
+      "Bash(sed -n '234,240p' \"C:/Users/hamza/caloracle/src/app/recipes/[id]/page.tsx\")",
+      "Bash(sed -n '300,312p' \"C:/Users/hamza/caloracle/src/app/recipes/[id]/page.tsx\")",
+      "Bash(sed -n '729,740p' \"C:/Users/hamza/caloracle/src/app/recipes/[id]/page.tsx\")",
+      "Bash(grep -n \"^    },$\\\\|^    }$\" \"C:/Users/hamza/caloracle/prisma/seed-more.ts\")",
+      "Bash(npx tsc *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(sed -n '40,50p' C:/Users/hamza/caloracle/src/app/api/recipes/\\\\[id\\\\]/route.ts)",
+      "Bash(sed -n '83,93p' C:/Users/hamza/caloracle/src/app/api/recipes/\\\\[id\\\\]/route.ts)",
+      "Bash(sed -n '8,20p' C:/Users/hamza/caloracle/src/app/api/admin/users/\\\\[id\\\\]/route.ts)",
+      "Bash(sed -n '14,20p' C:/Users/hamza/caloracle/src/app/api/recipes/\\\\[id\\\\]/nutrition/route.ts)",
+      "Bash(sed -n '8,12p' \"C:\\\\Users\\\\hamza\\\\caloracle\\\\src\\\\app\\\\admin\\\\users\\\\page.tsx\")",
+      "Bash(sed -n '6,10p' \"C:\\\\Users\\\\hamza\\\\caloracle\\\\src\\\\app\\\\api\\\\admin\\\\hidden\\\\route.ts\")",
+      "Bash(sed -n '4,8p' \"C:\\\\Users\\\\hamza\\\\caloracle\\\\src\\\\app\\\\api\\\\admin\\\\mode\\\\route.ts\")",
+      "Bash(npm run *)",
+      "mcp__code-review-graph__get_architecture_overview_tool",
+      "Bash(python3 *)",
+      "Bash(node *)"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "code-review-graph"
+  ]
 }

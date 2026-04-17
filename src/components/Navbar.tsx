@@ -194,7 +194,7 @@ export default function Navbar() {
                 )}
             </nav>
 
-            <SignInModal isOpen={showSignInModal} onClose={() => setShowSignInModal(false)} />
+            <SignInModal isOpen={showSignInModal} onClose={() => setShowSignInModal(false)} returnTo={pathname} />
         </>
     )
 }

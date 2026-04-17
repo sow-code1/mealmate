@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import toast from 'react-hot-toast'
+import AuthGuard from '@/components/AuthGuard'
 
 interface FoodEntry {
     id: number
@@ -126,6 +127,10 @@ function MacroBar({ label, consumed, goal, color }: { label: string; consumed: n
 }
 
 export default function NutritionPage() {
+    return <AuthGuard><NutritionContent /></AuthGuard>
+}
+
+function NutritionContent() {
     const { data: session, status } = useSession()
     const router = useRouter()
     const [date, setDate] = useState(todayStr)
@@ -147,10 +152,6 @@ export default function NutritionPage() {
         fat: '',
     })
     const [adding, setAdding] = useState(false)
-
-    useEffect(() => {
-        if (status === 'unauthenticated') router.push('/login')
-    }, [status, router])
 
     const loadEntries = useCallback(async (d: string) => {
         setLoading(true)
@@ -191,6 +192,7 @@ export default function NutritionPage() {
     const handleDelete = async (id: number) => {
         await fetch(`/api/nutrition/log/${id}`, { method: 'DELETE' })
         setEntries(prev => prev.filter(e => e.id !== id))
+        toast.success('Entry removed')
     }
 
     const openModal = (mealType?: string) => {

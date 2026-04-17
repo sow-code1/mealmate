@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import Spinner from '@/components/Spinner'
+import AuthGuard from '@/components/AuthGuard'
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const DAY_FULL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -45,6 +46,10 @@ interface MealPlan {
 }
 
 export default function MealPlannerPage() {
+    return <AuthGuard><MealPlannerContent /></AuthGuard>
+}
+
+function MealPlannerContent() {
     const [mealPlan, setMealPlan] = useState<MealPlan | null>(null)
     const [recipes, setRecipes] = useState<Recipe[]>([])
     const [modal, setModal] = useState<{ day: string; mealType: string } | null>(null)
@@ -108,7 +113,7 @@ export default function MealPlannerPage() {
 
     return (
         <>
-            <div style={{ maxWidth: '100%', padding: '2.5rem 1.5rem 4rem', display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 64px)' }}>
+            <div style={{ maxWidth: '100%', padding: '2.5rem 1.5rem 4rem', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)', boxSizing: 'border-box', overflowY: 'auto' }}>
                 {/* Header */}
                 <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
                     <div>

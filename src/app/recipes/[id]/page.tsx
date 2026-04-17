@@ -6,6 +6,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import toast from 'react-hot-toast'
 import Spinner from '@/components/Spinner'
+import AddToMealPlanModal from '@/components/AddToMealPlanModal'
 
 interface Ingredient {
     id: number
@@ -105,6 +106,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
     const [showLogModal, setShowLogModal] = useState(false)
     const [logForm, setLogForm] = useState({ mealType: 'Dinner', servings: '1' })
     const [logging, setLogging] = useState(false)
+    const [showMealPlanModal, setShowMealPlanModal] = useState(false)
     const ingredientRefs = useRef<Record<number, HTMLDivElement | null>>({})
     const { timers, startTimer, resetTimer, pauseTimer } = useTimer()
 

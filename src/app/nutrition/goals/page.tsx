@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import AuthGuard from '@/components/AuthGuard'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 
@@ -41,6 +42,10 @@ function calcTDEE(gender: string, age: number, height: number, weight: number, a
 }
 
 export default function NutritionGoalsPage() {
+    return <AuthGuard><NutritionGoalsContent /></AuthGuard>
+}
+
+function NutritionGoalsContent() {
     const { status } = useSession()
     const router = useRouter()
     const [loading, setLoading] = useState(true)

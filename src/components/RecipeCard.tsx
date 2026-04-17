@@ -14,11 +14,12 @@ interface RecipeCardProps {
     favorite: boolean
     tags: string | null
     onFavoriteToggle?: (id: number, newFavorite: boolean) => void
+    onQuickView?: (id: number) => void
 }
 
 export default function RecipeCard({
                                        id, title, description, category, prepTime, cookTime, servings,
-                                       favorite: initialFavorite, tags, onFavoriteToggle,
+                                       favorite: initialFavorite, tags, onFavoriteToggle, onQuickView,
                                    }: RecipeCardProps) {
     const [favorite, setFavorite] = useState(initialFavorite)
     const [hovered, setHovered] = useState(false)
@@ -79,22 +80,40 @@ export default function RecipeCard({
                         {title[0]}
                     </span>
 
-                    {/* Favorite button */}
-                    <button
-                        onClick={toggleFavorite}
-                        style={{
-                            position: 'absolute', top: 10, right: 10,
-                            background: 'white', border: '1px solid var(--card-border)',
-                            borderRadius: '50%', width: 34, height: 34,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            cursor: 'pointer', fontSize: '1rem',
-                            boxShadow: 'var(--shadow-sm)', transition: 'transform 0.15s ease',
-                        }}
-                        onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.15)')}
-                        onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-                    >
-                        {favorite ? '❤️' : '🤍'}
-                    </button>
+                    {/* Action buttons */}
+                    <div style={{ position: 'absolute', top: 10, right: 10, display: 'flex', gap: '0.35rem' }}>
+                        {onQuickView && (
+                            <button
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); onQuickView(id) }}
+                                title="Quick view"
+                                style={{
+                                    background: 'white', border: '1px solid var(--card-border)',
+                                    borderRadius: '50%', width: 34, height: 34,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    cursor: 'pointer', fontSize: '0.9rem',
+                                    boxShadow: 'var(--shadow-sm)', transition: 'transform 0.15s ease',
+                                }}
+                                onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.15)')}
+                                onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+                            >
+                                👁
+                            </button>
+                        )}
+                        <button
+                            onClick={toggleFavorite}
+                            style={{
+                                background: 'white', border: '1px solid var(--card-border)',
+                                borderRadius: '50%', width: 34, height: 34,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                cursor: 'pointer', fontSize: '1rem',
+                                boxShadow: 'var(--shadow-sm)', transition: 'transform 0.15s ease',
+                            }}
+                            onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.15)')}
+                            onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+                        >
+                            {favorite ? '❤️' : '🤍'}
+                        </button>
+                    </div>
 
                     {/* Category badge */}
                     <div style={{

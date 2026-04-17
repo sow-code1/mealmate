@@ -8,6 +8,7 @@ import toast from 'react-hot-toast'
 interface Props {
     isOpen: boolean
     onClose: () => void
+    returnTo?: string
 }
 
 const inputStyle: React.CSSProperties = {
@@ -31,7 +32,7 @@ const labelStyle: React.CSSProperties = {
     marginBottom: '0.4rem',
 }
 
-export default function SignInModal({ isOpen, onClose }: Props) {
+export default function SignInModal({ isOpen, onClose, returnTo }: Props) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
@@ -66,11 +67,11 @@ export default function SignInModal({ isOpen, onClose }: Props) {
         } else {
             toast.success('Welcome back!')
             onClose()
-            window.location.href = '/recipes'
+            window.location.href = returnTo || '/recipes'
         }
     }
 
-    const handleGoogle = () => signIn('google', { callbackUrl: '/recipes' })
+    const handleGoogle = () => signIn('google', { callbackUrl: returnTo || '/recipes' })
 
     return (
         <div

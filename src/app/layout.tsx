@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import { Toaster } from "react-hot-toast";
 import AuthSessionProvider from "@/components/SessionProvider";
 import PageTransition from "@/components/PageTransition";
+import OnboardingProvider from "@/components/OnboardingProvider";
 
 const geist = Geist({
     variable: "--font-geist-sans",
@@ -27,6 +28,7 @@ export default function RootLayout({
         <AuthSessionProvider>
             <Navbar />
             <Toaster position="top-right" />
+            <OnboardingProvider />
             <main className="flex-1"><PageTransition>{children}</PageTransition></main>
         </AuthSessionProvider>
         </body>

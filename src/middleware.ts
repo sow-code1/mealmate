@@ -4,13 +4,13 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl
 
-    const publicPaths = ['/', '/login', '/register']
-    const isPublicPath = publicPaths.includes(pathname)
-    const isApiAuth = pathname.startsWith('/api/auth')
     const isStaticFile = pathname.startsWith('/_next') || pathname.includes('favicon.ico')
+    const isApiAuth = pathname.startsWith('/api/auth')
+    const isProtectedApi = pathname.startsWith('/api/') && !isApiAuth
 
-    if (isStaticFile || isApiAuth || isPublicPath) return NextResponse.next()
+    if (isStaticFile || isApiAuth || !isProtectedApi) return NextResponse.next()
 
+    // API routes: reject without a session cookie rather than redirecting (which returns HTML)
     const sessionToken =
         request.cookies.get('authjs.session-token') ??
         request.cookies.get('next-auth.session-token') ??
@@ -18,7 +18,7 @@ export function middleware(request: NextRequest) {
         request.cookies.get('__Secure-next-auth.session-token')
 
     if (!sessionToken) {
-        return NextResponse.redirect(new URL('/login', request.url))
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     return NextResponse.next()

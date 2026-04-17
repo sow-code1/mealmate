@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import RecipeCard from '@/components/RecipeCard'
+import RecipeQuickView from '@/components/RecipeQuickView'
+import AuthGuard from '@/components/AuthGuard'
 
 interface Recipe {
     id: number
@@ -21,6 +23,7 @@ export default function RecipesBrowser({ recipes: initialRecipes }: { recipes: R
     const [recipes, setRecipes] = useState(initialRecipes)
     const [search, setSearch] = useState('')
     const [activeCategory, setActiveCategory] = useState('All')
+    const [quickViewId, setQuickViewId] = useState<number | null>(null)
 
     const handleFavoriteToggle = (id: number, newFavorite: boolean) => {
         setRecipes((prev) =>
@@ -37,6 +40,7 @@ export default function RecipesBrowser({ recipes: initialRecipes }: { recipes: R
     })
 
     return (
+        <AuthGuard>
         <div>
             <div className="mb-6">
                 <input
@@ -105,11 +109,14 @@ export default function RecipesBrowser({ recipes: initialRecipes }: { recipes: R
                                 favorite={recipe.favorite}
                                 tags={recipe.tags}
                                 onFavoriteToggle={handleFavoriteToggle}
+                                onQuickView={setQuickViewId}
                             />
                         </div>
                     ))}
                 </div>
             )}
         </div>
+        <RecipeQuickView recipeId={quickViewId} onClose={() => setQuickViewId(null)} />
+        </AuthGuard>
     )
 }
