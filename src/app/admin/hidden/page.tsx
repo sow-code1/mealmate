@@ -7,7 +7,7 @@ import AdminDeleteButton from '@/components/AdminDeleteButton'
 
 export default async function AdminHiddenPage() {
     const session = await auth()
-        if (!session.user.isAdmin) redirect('/')
+        if (!session?.user?.isAdmin) redirect('/')
 
     const deletedRecipes = await prisma.recipe.findMany({
         where: { deleted: true },
