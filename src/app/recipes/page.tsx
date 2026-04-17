@@ -8,8 +8,7 @@ import { cookies } from 'next/headers'
 
 export default async function RecipesPage() {
     const session = await auth()
-    // @ts-ignore
-    const isAdmin = session?.user?.isAdmin === true
+        const isAdmin = session.user.isAdmin === true
     const cookieStore = await cookies()
     const adminMode = isAdmin && cookieStore.get('adminMode')?.value === 'true'
 

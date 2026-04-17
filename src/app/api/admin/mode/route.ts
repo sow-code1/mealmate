@@ -3,8 +3,7 @@ import { auth } from '@/auth'
 
 export async function POST(request: Request) {
     const session = await auth()
-    // @ts-ignore
-    if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        if (!session.user.isAdmin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const { enabled } = await request.json()
 

@@ -9,13 +9,14 @@ export async function GET(
 ) {
     try {
         const { id } = await params
+        const recipeId = parseInt(id)
+        if (isNaN(recipeId)) return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
         const session = await auth()
         if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-        // @ts-ignore
-        const isAdmin = session?.user?.isAdmin === true
+        const isAdmin = session.user.isAdmin === true
 
         const recipe = await prisma.recipe.findUnique({
-            where: { id: parseInt(id) },
+            where: { id: recipeId },
             include: {
                 ingredients: true,
                 steps: { orderBy: { order: 'asc' } },
@@ -39,14 +40,15 @@ export async function PUT(
 ) {
     try {
         const { id } = await params
+        const recipeId = parseInt(id)
+        if (isNaN(recipeId)) return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
         const session = await auth()
         if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-        // @ts-ignore
-        const isAdmin = session?.user?.isAdmin === true
+        const isAdmin = session.user.isAdmin === true
         const cookieStore = await cookies()
         const adminMode = isAdmin && cookieStore.get('adminMode')?.value === 'true'
 
-        const recipe = await prisma.recipe.findUnique({ where: { id: parseInt(id) } })
+        const recipe = await prisma.recipe.findUnique({ where: { id: recipeId } })
         if (!recipe) return NextResponse.json({ error: 'Not found' }, { status: 404 })
         if (recipe.userId !== session.user.id && !adminMode) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -55,11 +57,11 @@ export async function PUT(
         const body = await request.json()
         const { title, description, category, prepTime, cookTime, servings, tags, imageUrl, ingredients, steps } = body
 
-        await prisma.ingredient.deleteMany({ where: { recipeId: parseInt(id) } })
-        await prisma.step.deleteMany({ where: { recipeId: parseInt(id) } })
+        await prisma.ingredient.deleteMany({ where: { recipeId } })
+        await prisma.step.deleteMany({ where: { recipeId } })
 
         const updated = await prisma.recipe.update({
-            where: { id: parseInt(id) },
+            where: { id: recipeId },
             data: {
                 title, description, category, prepTime, cookTime, servings, tags, imageUrl,
                 ingredients: ingredients ? { create: ingredients } : undefined,
@@ -82,24 +84,25 @@ export async function DELETE(
 ) {
     try {
         const { id } = await params
+        const recipeId = parseInt(id)
+        if (isNaN(recipeId)) return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
         const session = await auth()
         if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-        // @ts-ignore
-        const isAdmin = session?.user?.isAdmin === true
+        const isAdmin = session.user.isAdmin === true
         const cookieStore = await cookies()
         const adminMode = isAdmin && cookieStore.get('adminMode')?.value === 'true'
 
-        const recipe = await prisma.recipe.findUnique({ where: { id: parseInt(id) } })
+        const recipe = await prisma.recipe.findUnique({ where: { id: recipeId } })
         if (!recipe) return NextResponse.json({ error: 'Not found' }, { status: 404 })
         if (recipe.userId !== session.user.id && !adminMode) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
         if (adminMode) {
-            await prisma.recipe.delete({ where: { id: parseInt(id) } })
+            await prisma.recipe.delete({ where: { id: recipeId } })
         } else {
             await prisma.recipe.update({
-                where: { id: parseInt(id) },
+                where: { id: recipeId },
                 data: { deleted: true, deletedAt: new Date() },
             })
         }

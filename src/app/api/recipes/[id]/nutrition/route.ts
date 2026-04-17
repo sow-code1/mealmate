@@ -14,8 +14,7 @@ export async function PUT(
 
     const recipe = await prisma.recipe.findUnique({ where: { id: recipeId } })
     if (!recipe) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-    // @ts-ignore
-    const isAdmin = session?.user?.isAdmin === true
+    const isAdmin = session.user.isAdmin === true
     if (recipe.userId !== session.user.id && !isAdmin) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }

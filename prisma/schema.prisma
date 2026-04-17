@@ -91,6 +91,9 @@ model Recipe {
   foodEntries      FoodEntry[]
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+
+  @@index([userId, deleted])
+  @@index([userId, createdAt])
 }
 
 model HiddenRecipe {

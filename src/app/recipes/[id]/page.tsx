@@ -150,7 +150,6 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
     }
 
     const isOwner = recipe?.userId === session?.user?.id
-    // @ts-ignore
     const isAdmin = session?.user?.isAdmin === true
     const isPreset = recipe?.isPublic && !recipe?.userId
 

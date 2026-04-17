@@ -8,7 +8,6 @@ export async function DELETE(
 ) {
     try {
         const session = await auth()
-        // @ts-ignore
         if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
         const { id } = await params

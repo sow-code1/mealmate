@@ -12,8 +12,7 @@ export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false)
     const [showSignInModal, setShowSignInModal] = useState(false)
     const { data: session } = useSession()
-    // @ts-ignore
-    const isAdmin = session?.user?.isAdmin === true
+        const isAdmin = session.user.isAdmin === true
 
     const links = [
         { href: '/recipes', label: 'Recipes' },
