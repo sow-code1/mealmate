@@ -7,7 +7,7 @@ import DeleteUserButton from '@/components/DeleteUserButton'
 
 export default async function AdminUsersPage() {
     const session = await auth()
-        if (!session.user.isAdmin) redirect('/')
+        if (!session?.user?.isAdmin) redirect('/')
 
     const users = await prisma.user.findMany({
         where: { deletedAt: null },

@@ -5,7 +5,7 @@ import { auth } from '@/auth'
 export async function DELETE(request: Request) {
     try {
         const session = await auth()
-                if (!session.user.isAdmin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+                if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
         const { recipeIds } = await request.json()
 
