@@ -149,7 +149,7 @@ h1, h2, h3, h4 {
 }
 
 .animate-page-in {
-  animation: pageIn 0.28s ease forwards;
+  animation: pageIn 0.28s ease;
 }
 
 /* ─── Recipe card stagger entrance ───────────────────────────── */
