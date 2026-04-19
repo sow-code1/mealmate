@@ -13,8 +13,19 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-    title: "Caloracle",
-    description: "Your personal recipe manager, meal planner and calorie tracker",
+    title: { default: "Caloracle", template: "%s | Caloracle" },
+    description: "Your personal recipe manager, meal planner and calorie tracker.",
+    openGraph: {
+        title: "Caloracle",
+        description: "Save recipes, plan meals, track calories — all in one place.",
+        type: "website",
+        siteName: "Caloracle",
+    },
+    twitter: {
+        card: "summary",
+        title: "Caloracle",
+        description: "Save recipes, plan meals, track calories — all in one place.",
+    },
 };
 
 export default function RootLayout({

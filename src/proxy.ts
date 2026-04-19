@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
 
     const isStaticFile = pathname.startsWith('/_next') || pathname.includes('favicon.ico')
@@ -10,7 +10,6 @@ export function middleware(request: NextRequest) {
 
     if (isStaticFile || isApiAuth || !isProtectedApi) return NextResponse.next()
 
-    // API routes: reject without a session cookie rather than redirecting (which returns HTML)
     const sessionToken =
         request.cookies.get('authjs.session-token') ??
         request.cookies.get('next-auth.session-token') ??

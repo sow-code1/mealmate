@@ -83,7 +83,7 @@ function LoginForm() {
                     Welcome back
                 </h1>
                 <p style={{ fontFamily: 'DM Sans, sans-serif', color: 'var(--muted)', fontSize: '0.9rem' }}>
-                    Sign in to your MealMate account
+                    Sign in to your Caloracle account
                 </p>
             </div>
 

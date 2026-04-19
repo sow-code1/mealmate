@@ -93,7 +93,7 @@ export default function RegisterPage() {
                     Create your account
                 </h1>
                 <p style={{ fontFamily: 'DM Sans, sans-serif', color: 'var(--muted)', fontSize: '0.9rem' }}>
-                    Join MealMate and start cooking smarter
+                    Join Caloracle and start cooking smarter
                 </p>
             </div>
 

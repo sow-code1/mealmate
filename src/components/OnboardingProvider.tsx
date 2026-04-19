@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import OnboardingModal from './OnboardingModal'
 
 export default function OnboardingProvider() {
-    const { data: session, status } = useSession()
+    const { status } = useSession()
     const [showOnboarding, setShowOnboarding] = useState(false)
     const [checked, setChecked] = useState(false)
 
@@ -19,7 +19,7 @@ export default function OnboardingProvider() {
                 if (!data.onboardingSeen) setShowOnboarding(true)
             })
             .catch(() => {})
-    }, [status, session, checked])
+    }, [status, checked])
 
     if (!showOnboarding) return null
 
