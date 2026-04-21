@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
-import { randomBytes } from 'crypto'
-import { sendVerificationEmail } from '@/lib/resend'
+import { sendVerificationEmail } from '@/lib/email'
 
 export async function POST(request: Request) {
     try {
@@ -10,18 +9,28 @@ export async function POST(request: Request) {
         if (!email || !password) return NextResponse.json({ error: 'Email and password required' }, { status: 400 })
 
         const existing = await prisma.user.findUnique({ where: { email } })
-        if (existing) return NextResponse.json({ error: 'Email already in use' }, { status: 400 })
 
-        const hashed = await bcrypt.hash(password, 12)
+        let userEmail = email
 
-        // Create user with emailVerified: null — they cannot log in until verified
-        const user = await prisma.user.create({
-            data: { name, email, password: hashed, emailVerified: null },
-        })
+        if (existing) {
+            // Already verified — block duplicate registration
+            if (existing.emailVerified) {
+                return NextResponse.json({ error: 'Email already in use' }, { status: 400 })
+            }
+            // Not verified yet — allow resend (clean up old tokens)
+            await prisma.verificationToken.deleteMany({ where: { identifier: email } })
+            userEmail = existing.email!
+        } else {
+            const hashed = await bcrypt.hash(password, 12)
+            // Create user with emailVerified: null — they cannot log in until verified
+            await prisma.user.create({
+                data: { name, email, password: hashed, emailVerified: null },
+            })
+        }
 
-        // Generate a secure random token
-        const token = randomBytes(32).toString('hex')
-        const expires = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+        // Generate a 6-digit OTP code
+        const token = Math.floor(100000 + Math.random() * 900000).toString()
+        const expires = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
 
         // Store token in VerificationToken table
         await prisma.verificationToken.create({

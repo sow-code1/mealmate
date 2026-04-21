@@ -1,10 +1,16 @@
-import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+    },
+})
 
 export async function sendVerificationEmail(email: string, code: string) {
-    const resend = new Resend(process.env.RESEND_API_KEY!)
-
-    await resend.emails.send({
-        from: 'Caloracle <onboarding@resend.dev>',
+    await transporter.sendMail({
+        from: `"Caloracle" <${process.env.GMAIL_USER}>`,
         to: email,
         subject: `${code} is your Caloracle verification code`,
         html: `
@@ -22,7 +28,7 @@ export async function sendVerificationEmail(email: string, code: string) {
                     This code expires in 10 minutes. If you didn't create an account, you can safely ignore this email.
                 </p>
                 <hr style="border: none; border-top: 1px solid #e8e4dc; margin: 1.5rem 0;" />
-                <p style="color: #a8a29e; font-size: 0.75rem;">Caloracle · Your personal kitchen & calorie companion</p>
+                <p style="color: #a8a29e; font-size: 0.75rem;">Caloracle · Your personal kitchen &amp; calorie companion</p>
             </div>
         `,
     })

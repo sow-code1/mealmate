@@ -31,7 +31,20 @@
       "Bash(npm run *)",
       "mcp__code-review-graph__get_architecture_overview_tool",
       "Bash(python3 *)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(claude mcp *)",
+      "Bash(python -c \"import graphify\")",
+      "Bash(pip install *)",
+      "Bash(python -c ' *)",
+      "Read(//c/Users/hamza/.claude/**)",
+      "Bash(code-review-graph --version)",
+      "Bash(code-review-graph status *)",
+      "Bash(where graphify *)",
+      "Bash(npm list *)",
+      "Bash(pip show *)",
+      "Bash(graphify --help)",
+      "Bash(code-review-graph --help)",
+      "Bash(code-review-graph visualize *)"
     ]
   },
   "enableAllProjectMcpServers": true,

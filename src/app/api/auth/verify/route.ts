@@ -27,29 +27,33 @@ async function copyPresetsToUser(userId: string) {
     }
 }
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
-        const token = request.nextUrl.searchParams.get('token')
-        if (!token) return NextResponse.redirect(new URL('/login?error=invalid-token', request.url))
+        const { email, code } = await request.json()
+        if (!email || !code) {
+            return NextResponse.json({ error: 'Email and code are required' }, { status: 400 })
+        }
 
-        // Find the token
-        const verificationToken = await prisma.verificationToken.findUnique({
-            where: { token },
+        // Find the token by identifier (email) and token (code)
+        const verificationToken = await prisma.verificationToken.findFirst({
+            where: { identifier: email, token: code },
         })
 
         if (!verificationToken) {
-            return NextResponse.redirect(new URL('/login?error=invalid-token', request.url))
+            return NextResponse.json({ error: 'Invalid verification code' }, { status: 400 })
         }
 
         if (verificationToken.expires < new Date()) {
-            // Token expired — delete it and redirect
-            await prisma.verificationToken.delete({ where: { token } })
-            return NextResponse.redirect(new URL('/login?error=token-expired', request.url))
+            // Token expired — delete it
+            await prisma.verificationToken.delete({
+                where: { identifier_token: { identifier: email, token: code } },
+            })
+            return NextResponse.json({ error: 'Code has expired. Please register again.' }, { status: 400 })
         }
 
         // Mark user as verified
         const user = await prisma.user.update({
-            where: { email: verificationToken.identifier },
+            where: { email },
             data: { emailVerified: new Date() },
         })
 
@@ -57,11 +61,13 @@ export async function GET(request: NextRequest) {
         await copyPresetsToUser(user.id)
 
         // Clean up the token
-        await prisma.verificationToken.delete({ where: { token } })
+        await prisma.verificationToken.delete({
+            where: { identifier_token: { identifier: email, token: code } },
+        })
 
-        return NextResponse.redirect(new URL('/login?verified=true', request.url))
+        return NextResponse.json({ message: 'Email verified successfully' })
     } catch (error) {
         console.error(error)
-        return NextResponse.redirect(new URL('/login?error=server-error', request.url))
+        return NextResponse.json({ error: 'Verification failed' }, { status: 500 })
     }
 }
