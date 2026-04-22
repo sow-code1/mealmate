@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
         const body = await request.json()
-        const { title, description, category, prepTime, cookTime, servings, tags, ingredients, steps } = body
+        const { title, description, category, prepTime, cookTime, servings, tags, imageUrl, ingredients, steps } = body
 
         const recipe = await prisma.recipe.create({
             data: {
@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
                 cookTime,
                 servings,
                 tags,
+                imageUrl,
                 userId: session.user.id,
                 isPublic: false,
                 ingredients: { create: ingredients ?? [] },
