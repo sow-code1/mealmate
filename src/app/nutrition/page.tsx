@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import toast from 'react-hot-toast'
 import AuthGuard from '@/components/AuthGuard'
+import Calendar from '@/components/Calendar'
 
 interface FoodEntry {
     id: number
@@ -152,6 +153,7 @@ function NutritionContent() {
         fat: '',
     })
     const [adding, setAdding] = useState(false)
+    const [loggedDates, setLoggedDates] = useState<string[]>([])
 
     const loadEntries = useCallback(async (d: string) => {
         setLoading(true)
@@ -170,7 +172,21 @@ function NutritionContent() {
         }
     }, [])
 
+    const loadLoggedDates = useCallback(async () => {
+        try {
+            const res = await fetch('/api/nutrition/log/dates')
+            if (res.ok) {
+                const dates = await res.json()
+                setLoggedDates(Array.isArray(dates) ? dates : [])
+            }
+        } catch {
+            // Silently fail
+        }
+    }, [])
+
     useEffect(() => { loadEntries(date) }, [date, loadEntries])
+
+    useEffect(() => { loadLoggedDates() }, [loadLoggedDates])
 
     useEffect(() => {
         if (!showModal || recipes.length > 0) return
@@ -329,41 +345,25 @@ function NutritionContent() {
             </div>
 
             {/* Date nav */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                <button onClick={() => setDate(d => offsetDate(d, -1))} style={{
-                    background: 'var(--card)', border: '1px solid var(--card-border)',
-                    borderRadius: 'var(--radius-sm)', width: 34, height: 34,
-                    cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontSize: '1rem',
-                    color: 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>‹</button>
-                <span style={{
-                    fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '0.95rem',
-                    color: 'var(--foreground)', minWidth: 100, textAlign: 'center',
-                }}>
-                    {formatDate(date)}
-                </span>
-                <button
-                    onClick={() => setDate(d => offsetDate(d, 1))}
-                    disabled={date >= todayStr()}
-                    style={{
-                        background: 'var(--card)', border: '1px solid var(--card-border)',
-                        borderRadius: 'var(--radius-sm)', width: 34, height: 34,
-                        cursor: date >= todayStr() ? 'not-allowed' : 'pointer',
-                        fontFamily: 'DM Sans, sans-serif', fontSize: '1rem',
-                        color: date >= todayStr() ? 'var(--card-border)' : 'var(--muted)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        opacity: date >= todayStr() ? 0.4 : 1,
-                    }}
-                >›</button>
-                {date !== todayStr() && (
-                    <button onClick={() => setDate(todayStr())} style={{
-                        background: 'none', border: 'none', color: 'var(--primary)',
-                        fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '0.82rem',
-                        cursor: 'pointer', padding: '0.25rem 0.5rem',
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+                <Calendar selectedDate={date} onDateSelect={setDate} loggedDates={loggedDates} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{
+                        fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '0.95rem',
+                        color: 'var(--foreground)',
                     }}>
-                        Today
-                    </button>
-                )}
+                        {formatDate(date)}
+                    </span>
+                    {date !== todayStr() && (
+                        <button onClick={() => setDate(todayStr())} style={{
+                            background: 'none', border: 'none', color: 'var(--primary)',
+                            fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '0.82rem',
+                            cursor: 'pointer', padding: '0.25rem 0.5rem',
+                        }}>
+                            Today
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* No goals banner */}

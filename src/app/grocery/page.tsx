@@ -8,7 +8,7 @@ interface Ingredient {
     name: string
     amount: string
     unit: string | null
-    recipeTitle: string
+    recipeTitles: string[]
 }
 
 interface GroupedRecipe {
@@ -22,6 +22,11 @@ export default function GroceryPage() {
     const [view, setView] = useState<'combined' | 'grouped'>('combined')
     const [checked, setChecked] = useState<Set<string>>(new Set())
     const [removed, setRemoved] = useState<Set<string>>(new Set())
+    const [showConfirm, setShowConfirm] = useState(false)
+    const [undoAvailable, setUndoAvailable] = useState(false)
+    const [undoCountdown, setUndoCountdown] = useState(0)
+    const [previousChecked, setPreviousChecked] = useState<Set<string>>(new Set())
+    const [previousRemoved, setPreviousRemoved] = useState<Set<string>>(new Set())
 
     useEffect(() => {
         const savedChecked = localStorage.getItem('grocery-checked')
@@ -71,19 +76,53 @@ export default function GroceryPage() {
     }
 
     const resetList = () => {
-        if (!confirm('Reset the grocery list? All removed and checked items will be restored.')) return
-        saveChecked(new Set())
-        saveRemoved(new Set())
+        setShowConfirm(true)
     }
 
-    const ingredientKey = (ing: Ingredient) => `${ing.recipeTitle}__${ing.name}__${ing.amount}`
+    const confirmReset = () => {
+        // Save previous state for undo
+        setPreviousChecked(new Set(checked))
+        setPreviousRemoved(new Set(removed))
+
+        // Reset
+        saveChecked(new Set())
+        saveRemoved(new Set())
+        setShowConfirm(false)
+
+        // Show undo button
+        setUndoAvailable(true)
+        setUndoCountdown(10)
+
+        // Start countdown
+        const interval = setInterval(() => {
+            setUndoCountdown(prev => {
+                if (prev <= 1) {
+                    clearInterval(interval)
+                    setUndoAvailable(false)
+                    return 0
+                }
+                return prev - 1
+            })
+        }, 1000)
+    }
+
+    const undoReset = () => {
+        // Restore previous state
+        saveChecked(previousChecked)
+        saveRemoved(previousRemoved)
+        setUndoAvailable(false)
+        setUndoCountdown(0)
+    }
+
+    const ingredientKey = (ing: Ingredient) => `${ing.recipeTitles.join('|')}__${ing.name}__${ing.amount}`
     const visibleIngredients = ingredients.filter(ing => !removed.has(ingredientKey(ing)))
 
     const grouped: GroupedRecipe[] = []
     visibleIngredients.forEach(ing => {
-        const existing = grouped.find(g => g.title === ing.recipeTitle)
+        const recipeTitle = ing.recipeTitles[0] || 'Unknown'
+        const existing = grouped.find(g => g.title === recipeTitle)
         if (existing) existing.ingredients.push(ing)
-        else grouped.push({ title: ing.recipeTitle, ingredients: [ing] })
+        else grouped.push({ title: recipeTitle, ingredients: [ing] })
     })
 
     const checkedCount = visibleIngredients.filter(i => checked.has(ingredientKey(i))).length
@@ -129,20 +168,85 @@ export default function GroceryPage() {
                         {checkedCount} of {totalCount} items collected
                     </p>
                 </div>
-                <button
-                    onClick={resetList}
-                    style={{
-                        background: 'none', border: 'none', cursor: 'pointer',
-                        fontFamily: 'DM Sans, sans-serif', fontSize: '0.8rem',
-                        color: 'var(--muted)', padding: '0.3rem 0', marginTop: '0.25rem',
-                        transition: 'color 0.15s',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#dc2626')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}
-                >
-                    Reset list
-                </button>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    {undoAvailable ? (
+                        <button
+                            onClick={undoReset}
+                            style={{
+                                background: 'var(--primary)', border: 'none', cursor: 'pointer',
+                                fontFamily: 'DM Sans, sans-serif', fontSize: '0.8rem',
+                                color: 'white', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-sm)',
+                                transition: 'opacity 0.15s',
+                            }}
+                        >
+                            Undo ({undoCountdown}s)
+                        </button>
+                    ) : (
+                        <button
+                            onClick={resetList}
+                            style={{
+                                background: 'none', border: '1px solid #dc2626', cursor: 'pointer',
+                                fontFamily: 'DM Sans, sans-serif', fontSize: '0.8rem',
+                                color: '#dc2626', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-sm)',
+                                transition: 'all 0.15s',
+                            }}
+                            onMouseEnter={e => {
+                                const target = e.currentTarget as HTMLButtonElement
+                                target.style.background = '#dc2626'
+                                target.style.color = 'white'
+                            }}
+                            onMouseLeave={e => {
+                                const target = e.currentTarget as HTMLButtonElement
+                                target.style.background = 'none'
+                                target.style.color = '#dc2626'
+                            }}
+                        >
+                            Reset List
+                        </button>
+                    )}
+                </div>
             </div>
+
+            {/* Confirmation dialog */}
+            {showConfirm && (
+                <div style={{
+                    background: '#fef2f2', border: '1px solid #dc2626',
+                    borderRadius: 'var(--radius)', padding: '1rem 1.25rem',
+                    marginBottom: '1.5rem', display: 'flex', alignItems: 'center',
+                    justifyContent: 'space-between', gap: '1rem',
+                }}>
+                    <div>
+                        <p style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '0.9rem', color: '#dc2626' }}>
+                            Reset all items?
+                        </p>
+                        <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.82rem', color: 'var(--muted)', marginTop: '0.2rem' }}>
+                            This cannot be undone.
+                        </p>
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button
+                            onClick={() => setShowConfirm(false)}
+                            style={{
+                                background: 'white', border: '1px solid var(--card-border)',
+                                cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
+                                fontSize: '0.8rem', padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-sm)',
+                            }}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={confirmReset}
+                            style={{
+                                background: '#dc2626', border: 'none', cursor: 'pointer',
+                                fontFamily: 'DM Sans, sans-serif', fontSize: '0.8rem',
+                                color: 'white', padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-sm)',
+                            }}
+                        >
+                            Confirm
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Progress bar */}
             {totalCount > 0 && (
@@ -182,9 +286,9 @@ export default function GroceryPage() {
                     </p>
                     <button
                         onClick={resetList}
-                        style={{ marginTop: '0.75rem', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 600 }}
+                        style={{ marginTop: '0.75rem', background: 'none', border: '1px solid var(--card-border)', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontSize: '0.85rem', color: 'var(--foreground)', fontWeight: 600, padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-sm)' }}
                     >
-                        Reset list
+                        Reset List
                     </button>
                 </div>
             ) : view === 'combined' ? (
@@ -232,7 +336,10 @@ export default function GroceryPage() {
                                         {ing.name}
                                     </span>
                                     <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.75rem', color: 'var(--muted)', marginLeft: '0.4rem' }}>
-                                        {ing.recipeTitle}
+                                        {ing.recipeTitles.length === 1
+                                            ? ing.recipeTitles[0]
+                                            : ing.recipeTitles.slice(0, -1).join(', ') + ' and ' + ing.recipeTitles[ing.recipeTitles.length - 1]
+                                        }
                                     </span>
                                 </div>
 

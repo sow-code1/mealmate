@@ -55,6 +55,7 @@ function MealPlannerContent() {
     const [modal, setModal] = useState<{ day: string; mealType: string } | null>(null)
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
+    const [showClearConfirm, setShowClearConfirm] = useState(false)
 
     useEffect(() => {
         Promise.all([
@@ -105,6 +106,22 @@ function MealPlannerContent() {
         }
     }
 
+    const clearWeek = async () => {
+        if (!mealPlan) return
+        try {
+            await fetch(`/api/mealplan/clear-week`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mealPlanId: mealPlan.id }),
+            })
+            setMealPlan(prev => prev ? { ...prev, slots: [] } : prev)
+            toast.success('Week cleared')
+            setShowClearConfirm(false)
+        } catch {
+            toast.error('Failed to clear week')
+        }
+    }
+
     const filteredRecipes = recipes.filter(r =>
         r.title.toLowerCase().includes(search.toLowerCase())
     )
@@ -135,10 +152,61 @@ function MealPlannerContent() {
                             Plan your meals for the week ahead
                         </p>
                     </div>
-                    <Link href="/grocery" className="btn-primary" style={{ textDecoration: 'none', fontSize: '0.875rem', padding: '0.55rem 1.25rem', border: 'none' }}>
-                        🛒 View Grocery List
-                    </Link>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                        <Link href="/grocery" className="btn-primary" style={{ textDecoration: 'none', fontSize: '0.875rem', padding: '0.55rem 1.25rem', border: 'none' }}>
+                            🛒 View Grocery List
+                        </Link>
+                        <button
+                            onClick={() => setShowClearConfirm(true)}
+                            style={{
+                                padding: '0.55rem 1.25rem', border: '1px solid #dc2626',
+                                borderRadius: 'var(--radius-sm)', fontFamily: 'DM Sans, sans-serif',
+                                fontWeight: 600, fontSize: '0.875rem', color: '#dc2626',
+                                background: 'none', cursor: 'pointer',
+                            }}
+                        >
+                            Clear Week
+                        </button>
+                    </div>
                 </div>
+
+                {/* Clear confirmation */}
+                {showClearConfirm && (
+                    <div style={{
+                        maxWidth: 1200, margin: '0 auto', background: '#fef2f2',
+                        border: '1px solid #dc2626', borderRadius: 'var(--radius)',
+                        padding: '1rem 1.25rem', marginBottom: '1.5rem', display: 'flex',
+                        alignItems: 'center', justifyContent: 'space-between', gap: '1rem',
+                    }}>
+                        <div>
+                            <p style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '0.9rem', color: '#dc2626' }}>
+                                Remove all meals from this week's plan?
+                            </p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <button
+                                onClick={() => setShowClearConfirm(false)}
+                                style={{
+                                    background: 'white', border: '1px solid var(--card-border)',
+                                    cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
+                                    fontSize: '0.8rem', padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-sm)',
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={clearWeek}
+                                style={{
+                                    background: '#dc2626', border: 'none', cursor: 'pointer',
+                                    fontFamily: 'DM Sans, sans-serif', fontSize: '0.8rem',
+                                    color: 'white', padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-sm)',
+                                }}
+                            >
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* Grid */}
                 <div style={{ maxWidth: 1200, margin: '0 auto', overflowX: 'auto', paddingBottom: '1rem', flex: 1, display: 'flex', flexDirection: 'column' }}>

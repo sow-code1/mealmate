@@ -70,7 +70,7 @@ export async function GET() {
 
         // Collect ingredients once per unique recipe, with amounts multiplied by slot count
         const seenRecipeIds = new Set<number>()
-        const ingredients: { name: string; amount: string; unit: string | null; recipeTitle: string }[] = []
+        const ingredientMap = new Map<string, { amount: number; unit: string | null; recipeTitles: string[] }>()
 
         mealPlan.slots.forEach((slot) => {
             if (slot.recipe && !seenRecipeIds.has(slot.recipe.id)) {
@@ -80,18 +80,67 @@ export async function GET() {
                 slot.recipe.ingredients.forEach((ing) => {
                     const parsed = parseAmount(ing.amount)
                     const scaledAmount = parsed !== null
-                        ? formatAmount(parsed * count)
-                        : ing.amount // if unparseable (e.g. "to taste"), leave as-is
+                        ? parsed * count
+                        : null // if unparseable, we can't aggregate
 
-                    ingredients.push({
-                        name: ing.name,
-                        amount: scaledAmount,
-                        unit: ing.unit,
-                        recipeTitle: slot.recipe!.title,
-                    })
+                    const key = `${ing.name.toLowerCase()}|${ing.unit || ''}`
+
+                    if (scaledAmount !== null) {
+                        const existing = ingredientMap.get(key)
+                        if (existing) {
+                            existing.amount += scaledAmount
+                            existing.recipeTitles.push(slot.recipe!.title)
+                        } else {
+                            ingredientMap.set(key, {
+                                amount: scaledAmount,
+                                unit: ing.unit,
+                                recipeTitles: [slot.recipe!.title],
+                            })
+                        }
+                    } else {
+                        // For unparseable amounts (e.g. "to taste"), keep as separate entries
+                        const key = `${ing.name.toLowerCase()}|${ing.unit || ''}|${ing.amount}`
+                        const existing = ingredientMap.get(key)
+                        if (existing) {
+                            existing.recipeTitles.push(slot.recipe!.title)
+                        } else {
+                            ingredientMap.set(key, {
+                                amount: 0, // placeholder
+                                unit: ing.unit,
+                                recipeTitles: [slot.recipe!.title],
+                            })
+                        }
+                    }
                 })
             }
         })
+
+        // Convert map to array
+        const ingredients: { name: string; amount: string; unit: string | null; recipeTitles: string[] }[] = []
+
+        ingredientMap.forEach((value, key) => {
+            const [name, unit, rawAmount] = key.split('|')
+            if (rawAmount) {
+                // Unparseable amount
+                ingredients.push({
+                    name: name.charAt(0).toUpperCase() + name.slice(1),
+                    amount: rawAmount,
+                    unit: unit || null,
+                    recipeTitles: value.recipeTitles,
+                })
+            } else {
+                // Parsed and aggregated amount
+                ingredients.push({
+                    name: name.charAt(0).toUpperCase() + name.slice(1),
+                    amount: formatAmount(value.amount),
+                    unit: unit || null,
+                    recipeTitles: value.recipeTitles,
+                })
+            }
+        })
+
+        // Sort by name
+        ingredients.sort((a, b) => a.name.localeCompare(b.name))
 
         return NextResponse.json(ingredients)
     } catch (error) {
