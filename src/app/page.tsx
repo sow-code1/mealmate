@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { auth } from '@/auth'
 import HomeCTA from '@/components/HomeCTA'
+import ScrollReveal from '@/components/ScrollReveal'
 
 export default async function Home() {
     const session = await auth()
@@ -9,7 +10,7 @@ export default async function Home() {
         <div>
             {/* Hero */}
             <div className="texture-overlay" style={{
-                background: 'linear-gradient(135deg, #eef4ef 0%, #faf9f6 50%, #fdf3eb 100%)',
+                background: 'linear-gradient(135deg, var(--primary-light) 0%, var(--background) 50%, var(--accent-light) 100%)',
                 padding: '6rem 1.5rem 5rem',
                 textAlign: 'center',
                 position: 'relative',
@@ -17,12 +18,12 @@ export default async function Home() {
             }}>
                 <div style={{
                     position: 'absolute', top: -80, right: -80, width: 320, height: 320,
-                    borderRadius: '50%', background: 'radial-gradient(circle, #3d6b4520 0%, transparent 70%)',
+                    borderRadius: '50%', background: 'radial-gradient(circle, rgba(61,107,69,0.12) 0%, transparent 70%)',
                     pointerEvents: 'none',
                 }} />
                 <div style={{
                     position: 'absolute', bottom: -60, left: -60, width: 240, height: 240,
-                    borderRadius: '50%', background: 'radial-gradient(circle, #c8773a18 0%, transparent 70%)',
+                    borderRadius: '50%', background: 'radial-gradient(circle, rgba(200,119,58,0.1) 0%, transparent 70%)',
                     pointerEvents: 'none',
                 }} />
 
@@ -96,7 +97,7 @@ export default async function Home() {
 
             {/* Features */}
             <div style={{ maxWidth: 1100, margin: '0 auto', padding: '5rem 1.5rem' }}>
-                <div className="animate-fade-up-delay-1" style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+                <ScrollReveal style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
                     <h2 style={{
                         fontFamily: 'Playfair Display, serif',
                         fontSize: 'clamp(1.8rem, 3vw, 2.5rem)',
@@ -107,9 +108,9 @@ export default async function Home() {
                         Everything you need to eat well
                     </h2>
                     <p style={{ fontFamily: 'DM Sans, sans-serif', color: 'var(--muted)', fontSize: '1rem', fontWeight: 300 }}>
-                        From recipe to table, we've got you covered.
+                        From recipe to table, we&apos;ve got you covered.
                     </p>
-                </div>
+                </ScrollReveal>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
                     {[
@@ -117,51 +118,53 @@ export default async function Home() {
                             icon: '📖',
                             title: 'Recipe Manager',
                             desc: 'Save, organize, and search your recipes with dietary tags and category filters.',
-                            accent: '#eef4ef',
-                            delay: 'animate-fade-up-delay-2',
+                            accent: 'var(--primary-light)',
+                            delay: 1 as const,
                         },
                         {
                             icon: '📅',
                             title: 'Meal Planner',
                             desc: 'Plan breakfast, lunch, dinner, and snacks for every day of the week.',
-                            accent: '#fdf3eb',
-                            delay: 'animate-fade-up-delay-3',
+                            accent: 'var(--accent-light)',
+                            delay: 2 as const,
                         },
                         {
                             icon: '🔥',
                             title: 'Calorie Tracker',
                             desc: 'Track your calories and macros to stay on top of your health and weight goals.',
-                            accent: '#f0f4ff',
-                            delay: 'animate-fade-up-delay-4',
+                            accent: 'var(--muted-light)',
+                            delay: 3 as const,
                         },
                         {
                             icon: '🛒',
                             title: 'Grocery List',
                             desc: 'Automatically generate a shopping list from your weekly meal plan — ingredients totaled up.',
-                            accent: '#fef9e7',
-                            delay: 'animate-fade-up-delay-4',
+                            accent: 'var(--primary-light)',
+                            delay: 4 as const,
                         },
                     ].map(({ icon, title, desc, accent, delay }) => (
-                        <div key={title} className={`card ${delay}`} style={{ padding: '2rem' }}>
-                            <div style={{
-                                width: 52, height: 52, borderRadius: 14,
-                                background: accent,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: '1.6rem', marginBottom: '1.25rem',
-                            }}>
-                                {icon}
+                        <ScrollReveal key={title} delay={delay}>
+                            <div className="card" style={{ padding: '2rem', height: '100%' }}>
+                                <div style={{
+                                    width: 52, height: 52, borderRadius: 14,
+                                    background: accent,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    fontSize: '1.6rem', marginBottom: '1.25rem',
+                                }}>
+                                    {icon}
+                                </div>
+                                <h3 style={{
+                                    fontFamily: 'Playfair Display, serif',
+                                    fontSize: '1.2rem', fontWeight: 600,
+                                    color: 'var(--foreground)', marginBottom: '0.6rem',
+                                }}>
+                                    {title}
+                                </h3>
+                                <p style={{ fontFamily: 'DM Sans, sans-serif', color: 'var(--muted)', fontSize: '0.9rem', lineHeight: 1.65, fontWeight: 300 }}>
+                                    {desc}
+                                </p>
                             </div>
-                            <h3 style={{
-                                fontFamily: 'Playfair Display, serif',
-                                fontSize: '1.2rem', fontWeight: 600,
-                                color: 'var(--foreground)', marginBottom: '0.6rem',
-                            }}>
-                                {title}
-                            </h3>
-                            <p style={{ fontFamily: 'DM Sans, sans-serif', color: 'var(--muted)', fontSize: '0.9rem', lineHeight: 1.65, fontWeight: 300 }}>
-                                {desc}
-                            </p>
-                        </div>
+                        </ScrollReveal>
                     ))}
                 </div>
             </div>

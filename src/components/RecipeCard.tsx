@@ -13,13 +13,14 @@ interface RecipeCardProps {
     servings: number | null
     favorite: boolean
     tags: string | null
+    imageUrl?: string | null
     onFavoriteToggle?: (id: number, newFavorite: boolean) => void
     onQuickView?: (id: number) => void
 }
 
 export default function RecipeCard({
                                        id, title, description, category, prepTime, cookTime, servings,
-                                       favorite: initialFavorite, tags, onFavoriteToggle, onQuickView,
+                                       favorite: initialFavorite, tags, imageUrl, onFavoriteToggle, onQuickView,
                                    }: RecipeCardProps) {
     const [favorite, setFavorite] = useState(initialFavorite)
     const [hovered, setHovered] = useState(false)
@@ -67,18 +68,22 @@ export default function RecipeCard({
                 {/* Top accent strip */}
                 <div style={{ height: 4, background: `linear-gradient(90deg, var(--primary), ${accentBg})` }} />
 
-                {/* Letter placeholder */}
-                <div style={{ height: 140, background: accentBg, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{
-                        fontFamily: 'Playfair Display, serif',
-                        fontSize: '4rem',
-                        opacity: 0.15,
-                        userSelect: 'none',
-                        fontWeight: 700,
-                        color: 'var(--primary)',
-                    }}>
-                        {title[0]}
-                    </span>
+                {/* Letter placeholder or Image */}
+                <div style={{ height: 180, background: accentBg, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {imageUrl ? (
+                        <img src={imageUrl} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                        <span style={{
+                            fontFamily: 'Playfair Display, serif',
+                            fontSize: '4rem',
+                            opacity: 0.15,
+                            userSelect: 'none',
+                            fontWeight: 700,
+                            color: 'var(--primary)',
+                        }}>
+                            {title[0]}
+                        </span>
+                    )}
 
                     {/* Action buttons */}
                     <div style={{ position: 'absolute', top: 10, right: 10, display: 'flex', gap: '0.35rem' }}>

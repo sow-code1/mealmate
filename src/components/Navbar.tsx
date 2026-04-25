@@ -61,29 +61,7 @@ export default function Navbar() {
                                     key={href}
                                     href={href}
                                     onClick={(e) => handleProtectedClick(e, href)}
-                                    style={{
-                                        color: isActive ? 'var(--primary)' : 'var(--muted)',
-                                        background: isActive ? 'var(--primary-light)' : 'transparent',
-                                        fontFamily: 'DM Sans, sans-serif',
-                                        fontWeight: 500,
-                                        fontSize: '0.9rem',
-                                        padding: '0.4rem 0.85rem',
-                                        borderRadius: 'var(--radius-sm)',
-                                        transition: 'all 0.15s ease',
-                                        textDecoration: 'none',
-                                    }}
-                                    onMouseEnter={e => {
-                                        if (!isActive) {
-                                            (e.target as HTMLElement).style.color = 'var(--primary)'
-                                            ;(e.target as HTMLElement).style.background = 'var(--muted-light)'
-                                        }
-                                    }}
-                                    onMouseLeave={e => {
-                                        if (!isActive) {
-                                            (e.target as HTMLElement).style.color = 'var(--muted)'
-                                            ;(e.target as HTMLElement).style.background = 'transparent'
-                                        }
-                                    }}
+                                    className={`nav-link${isActive ? ' active' : ''}`}
                                 >
                                     {label}
                                 </Link>

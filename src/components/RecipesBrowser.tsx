@@ -15,6 +15,7 @@ interface Recipe {
     servings: number | null
     favorite: boolean
     tags: string | null
+    imageUrl?: string | null
 }
 
 const CATEGORIES = ['All', 'Favorites', 'Breakfast', 'Lunch', 'Dinner', 'Snack', 'Dessert']
@@ -48,17 +49,7 @@ export default function RecipesBrowser({ recipes: initialRecipes }: { recipes: R
                     placeholder="Search recipes..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    style={{
-                        width: '100%',
-                        border: '1px solid var(--card-border)',
-                        borderRadius: 'var(--radius-sm)',
-                        padding: '0.6rem 1rem',
-                        fontSize: '0.9rem',
-                        fontFamily: 'DM Sans, sans-serif',
-                        background: 'var(--card)',
-                        color: 'var(--foreground)',
-                        outline: 'none',
-                    }}
+                    className="input-field"
                 />
             </div>
 
@@ -86,9 +77,29 @@ export default function RecipesBrowser({ recipes: initialRecipes }: { recipes: R
             </div>
 
             {filtered.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '5rem 0', color: 'var(--muted)', fontFamily: 'DM Sans, sans-serif' }}>
-                    <p style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>No recipes found</p>
-                    <p style={{ fontSize: '0.85rem' }}>Try a different search or category</p>
+                <div style={{ textAlign: 'center', padding: '5rem 1rem', fontFamily: 'DM Sans, sans-serif' }}>
+                    <div style={{ fontSize: '3.5rem', marginBottom: '1rem', opacity: 0.45, userSelect: 'none' }}>
+                        {activeCategory === 'Favorites' ? '❤️' : search ? '🔍' : '🍽️'}
+                    </div>
+                    <p style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.3rem', fontWeight: 600, color: 'var(--foreground)', marginBottom: '0.5rem' }}>
+                        {search
+                            ? 'No recipes match your search'
+                            : activeCategory === 'Favorites'
+                            ? 'No favorites yet'
+                            : `No ${activeCategory === 'All' ? '' : activeCategory.toLowerCase() + ' '}recipes yet`}
+                    </p>
+                    <p style={{ fontSize: '0.88rem', color: 'var(--muted)', marginBottom: '1.75rem', lineHeight: 1.65 }}>
+                        {search
+                            ? 'Try different keywords or clear the search'
+                            : activeCategory === 'Favorites'
+                            ? 'Tap the heart on any recipe to save it here'
+                            : 'Add your first recipe to get started'}
+                    </p>
+                    {!search && activeCategory === 'All' && (
+                        <a href="/recipes/new" className="btn-primary" style={{ fontSize: '0.9rem' }}>
+                            + Add Recipe
+                        </a>
+                    )}
                 </div>
             ) : (
                 <div key={`${activeCategory}-${search}`} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -108,6 +119,7 @@ export default function RecipesBrowser({ recipes: initialRecipes }: { recipes: R
                                 servings={recipe.servings}
                                 favorite={recipe.favorite}
                                 tags={recipe.tags}
+                                imageUrl={recipe.imageUrl}
                                 onFavoriteToggle={handleFavoriteToggle}
                                 onQuickView={setQuickViewId}
                             />
