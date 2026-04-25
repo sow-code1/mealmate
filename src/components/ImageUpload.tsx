@@ -58,7 +58,7 @@ export default function ImageUpload({ currentImageUrl, onUpload }: ImageUploadPr
                     cursor: uploading ? 'not-allowed' : 'pointer',
                     transition: 'border-color 0.2s ease, background 0.2s ease',
                     background: dragOver ? 'var(--primary-light)' : 'var(--muted-light)',
-                    height: 200,
+                    height: 280,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -67,7 +67,7 @@ export default function ImageUpload({ currentImageUrl, onUpload }: ImageUploadPr
             >
                 {preview ? (
                     <>
-                        <img src={preview} alt="Recipe preview" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        <img src={preview} alt="Recipe preview" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: '#00000010' }} />
                         <div
                             style={{
                                 position: 'absolute', inset: 0,

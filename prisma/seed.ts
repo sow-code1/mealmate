@@ -22,6 +22,7 @@ async function main() {
             servings: 4,
             category: 'Dinner',
             isPublic: true,
+            imageUrl: 'https://images.unsplash.com/photo-1612874742237-6526221588e3?q=80&w=1000&auto=format&fit=crop',
             ingredients: {
                 create: [
                     { name: 'Spaghetti', amount: '400', unit: 'g' },
@@ -53,6 +54,7 @@ async function main() {
             servings: 4,
             category: 'Dinner',
             isPublic: true,
+            imageUrl: 'https://images.unsplash.com/photo-1598514982205-f36b96d1e8d4?q=80&w=1000&auto=format&fit=crop',
             ingredients: {
                 create: [
                     { name: 'Chicken thighs', amount: '600', unit: 'g' },
@@ -83,6 +85,7 @@ async function main() {
             servings: 1,
             category: 'Breakfast',
             isPublic: true,
+            imageUrl: 'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?q=80&w=1000&auto=format&fit=crop',
             ingredients: {
                 create: [
                     { name: 'Rolled oats', amount: '80', unit: 'g' },
@@ -113,6 +116,7 @@ async function main() {
             servings: 2,
             category: 'Lunch',
             isPublic: true,
+            imageUrl: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?q=80&w=1000&auto=format&fit=crop',
             ingredients: {
                 create: [
                     { name: 'Cooked rice', amount: '300', unit: 'g' },
@@ -144,6 +148,7 @@ async function main() {
             servings: 1,
             category: 'Snack',
             isPublic: true,
+            imageUrl: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?q=80&w=1000&auto=format&fit=crop',
             ingredients: {
                 create: [
                     { name: 'Banana', amount: '1', unit: '' },

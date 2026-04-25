@@ -117,6 +117,17 @@ function MealPlannerContent() {
                 {/* Header */}
                 <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
                     <div>
+                        <Link href="/recipes" style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                            fontFamily: 'DM Sans, sans-serif', fontSize: '0.85rem',
+                            color: 'var(--muted)', textDecoration: 'none',
+                            marginBottom: '1rem', transition: 'color 0.15s ease',
+                        }}
+                              onMouseEnter={e => (e.currentTarget.style.color = 'var(--primary)')}
+                              onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}
+                        >
+                            ← Back to Recipes
+                        </Link>
                         <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.8rem, 4vw, 2.4rem)', fontWeight: 700, color: 'var(--foreground)', marginBottom: '0.3rem' }}>
                             Weekly Meal Plan
                         </h1>

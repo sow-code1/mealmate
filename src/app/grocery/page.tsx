@@ -109,6 +109,17 @@ export default function GroceryPage() {
     return (
         <div style={{ maxWidth: 680, margin: '0 auto', padding: '3rem 1.5rem 5rem' }}>
             {/* Header */}
+            <Link href="/mealplan" style={{
+                display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                fontFamily: 'DM Sans, sans-serif', fontSize: '0.85rem',
+                color: 'var(--muted)', textDecoration: 'none',
+                marginBottom: '1rem', transition: 'color 0.15s ease',
+            }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--primary)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}
+            >
+                ← Back to Meal Planner
+            </Link>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
                 <div>
                     <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '2rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '0.3rem' }}>

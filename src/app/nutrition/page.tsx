@@ -285,6 +285,17 @@ function NutritionContent() {
         <div style={{ maxWidth: 760, margin: '0 auto', padding: '2.5rem 1.5rem 5rem' }}>
 
             {/* Header */}
+            <Link href="/recipes" style={{
+                display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                fontFamily: 'DM Sans, sans-serif', fontSize: '0.85rem',
+                color: 'var(--muted)', textDecoration: 'none',
+                marginBottom: '1rem', transition: 'color 0.15s ease',
+            }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--primary)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}
+            >
+                ← Back to Recipes
+            </Link>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
                 <div>
                     <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '2rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '0.25rem' }}>

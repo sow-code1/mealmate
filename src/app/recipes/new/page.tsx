@@ -79,6 +79,19 @@ export default function NewRecipePage() {
 
     return (
         <div style={{ maxWidth: 720, margin: '0 auto', padding: '3rem 1.5rem' }}>
+            <button onClick={() => router.push('/recipes')} style={{
+                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                fontFamily: 'DM Sans, sans-serif', fontSize: '0.85rem',
+                color: 'var(--muted)', textDecoration: 'none',
+                marginBottom: '1.75rem', transition: 'color 0.15s ease',
+            }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--primary)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}
+            >
+                ← Back to Recipes
+            </button>
+
             <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '2rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '0.5rem' }}>
                 Add New Recipe
             </h1>

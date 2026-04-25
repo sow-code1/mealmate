@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import Spinner from '@/components/Spinner'
+import ImageUpload from '@/components/ImageUpload'
 
 const inputStyle = {
     width: '100%',
@@ -33,6 +34,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
     const [id, setId] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
+    const [imageUrl, setImageUrl] = useState<string | null>(null)
     const [form, setForm] = useState({
         title: '', description: '', category: '',
         prepTime: '', cookTime: '', servings: '', tags: '',
@@ -57,6 +59,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                         servings: recipe.servings?.toString() ?? '',
                         tags: recipe.tags ?? '',
                     })
+                    setImageUrl(recipe.imageUrl ?? null)
                     setIngredients(recipe.ingredients?.map((i: { name: string; amount: string; unit: string }) => ({
                         name: i.name, amount: i.amount, unit: i.unit ?? '',
                     })) ?? [{ name: '', amount: '', unit: '' }])
@@ -123,6 +126,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...form,
+                    imageUrl,
                     prepTime: parseInt(form.prepTime) || 0,
                     cookTime: parseInt(form.cookTime) || 0,
                     servings: parseInt(form.servings) || 0,
@@ -151,6 +155,13 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+
+                {/* Image upload */}
+                <div style={{ background: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 'var(--radius)', padding: '1.5rem' }}>
+                    <label style={labelStyle}>Recipe Photo <span style={{ color: 'var(--muted)', fontWeight: 400 }}>(optional)</span></label>
+                    <ImageUpload currentImageUrl={imageUrl} onUpload={(url) => setImageUrl(url)} />
+                </div>
+
                 <div style={{ background: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 'var(--radius)', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
                     <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.05rem', fontWeight: 600, color: 'var(--foreground)', marginBottom: '0.25rem' }}>Basic Info</h2>
                     <div>
