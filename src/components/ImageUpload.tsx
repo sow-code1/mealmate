@@ -5,9 +5,10 @@ import { useState, useRef } from 'react'
 interface ImageUploadProps {
     currentImageUrl?: string | null
     onUpload: (url: string) => void
+    onRemove?: () => void
 }
 
-export default function ImageUpload({ currentImageUrl, onUpload }: ImageUploadProps) {
+export default function ImageUpload({ currentImageUrl, onUpload, onRemove }: ImageUploadProps) {
     const [preview, setPreview] = useState<string | null>(currentImageUrl ?? null)
     const [uploading, setUploading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -68,6 +69,32 @@ export default function ImageUpload({ currentImageUrl, onUpload }: ImageUploadPr
                 {preview ? (
                     <>
                         <img src={preview} alt="Recipe preview" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: '#00000010' }} />
+                        {onRemove && (
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onRemove(); setPreview(null); }}
+                                style={{
+                                    position: 'absolute',
+                                    top: 8,
+                                    right: 8,
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: '50%',
+                                    background: 'rgba(0,0,0,0.6)',
+                                    border: '2px solid white',
+                                    color: 'white',
+                                    fontSize: '1.2rem',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    transition: 'background 0.2s ease',
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(220,38,38,0.8)'}
+                                onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,0,0,0.6)'}
+                            >
+                                ×
+                            </button>
+                        )}
                         <div
                             style={{
                                 position: 'absolute', inset: 0,

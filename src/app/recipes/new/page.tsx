@@ -104,7 +104,7 @@ export default function NewRecipePage() {
                 {/* Image upload */}
                 <div style={{ background: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 'var(--radius)', padding: '1.5rem' }}>
                     <label style={labelStyle}>Recipe Photo <span style={{ color: 'var(--muted)', fontWeight: 400 }}>(optional)</span></label>
-                    <ImageUpload onUpload={(url) => setImageUrl(url)} />
+                    <ImageUpload onUpload={(url) => setImageUrl(url)} onRemove={() => setImageUrl(null)} />
                 </div>
 
                 {/* Basic info */}

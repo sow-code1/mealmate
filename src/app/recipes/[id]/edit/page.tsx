@@ -159,7 +159,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                 {/* Image upload */}
                 <div style={{ background: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 'var(--radius)', padding: '1.5rem' }}>
                     <label style={labelStyle}>Recipe Photo <span style={{ color: 'var(--muted)', fontWeight: 400 }}>(optional)</span></label>
-                    <ImageUpload currentImageUrl={imageUrl} onUpload={(url) => setImageUrl(url)} />
+                    <ImageUpload currentImageUrl={imageUrl} onUpload={(url) => setImageUrl(url)} onRemove={() => setImageUrl(null)} />
                 </div>
 
                 <div style={{ background: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 'var(--radius)', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
