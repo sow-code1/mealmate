@@ -215,7 +215,7 @@ export default function GroceryPage() {
                         <button
                             onClick={resetList}
                             style={{
-                                background: 'none', border: '1px solid #dc2626', cursor: 'pointer',
+                                background: 'none', border: '1px solid var(--danger)', cursor: 'pointer',
                                 fontFamily: 'DM Sans, sans-serif', fontSize: '0.8rem',
                                 color: 'var(--danger)', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-sm)',
                                 transition: 'all 0.15s',

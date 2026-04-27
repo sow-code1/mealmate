@@ -302,11 +302,11 @@ function NutritionGoalsContent() {
                                 <div style={{
                                     width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
                                     border: `2px solid ${form.activityLevel === level.value ? 'var(--primary)' : 'var(--card-border)'}`,
-                                    background: form.activityLevel === level.value ? 'var(--primary)' : 'white',
+                                    background: form.activityLevel === level.value ? 'var(--primary)' : 'var(--card)',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 }}>
                                     {form.activityLevel === level.value && (
-                                        <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'white' }} />
+                                        <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--card)' }} />
                                     )}
                                 </div>
                                 <div>

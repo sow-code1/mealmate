@@ -159,7 +159,7 @@ function MealPlannerContent() {
                         <button
                             onClick={() => setShowClearConfirm(true)}
                             style={{
-                                padding: '0.55rem 1.25rem', border: '1px solid #dc2626',
+                                padding: '0.55rem 1.25rem', border: '1px solid var(--danger-border)',
                                 borderRadius: 'var(--radius-sm)', fontFamily: 'DM Sans, sans-serif',
                                 fontWeight: 600, fontSize: '0.875rem', color: 'var(--danger)',
                                 background: 'none', cursor: 'pointer',
@@ -173,8 +173,8 @@ function MealPlannerContent() {
                 {/* Clear confirmation */}
                 {showClearConfirm && (
                     <div style={{
-                        maxWidth: 1200, margin: '0 auto', background: '#fef2f2',
-                        border: '1px solid #dc2626', borderRadius: 'var(--radius)',
+                        maxWidth: 1200, margin: '0 auto', background: 'var(--danger-light)',
+                        border: '1px solid var(--danger-border)', borderRadius: 'var(--radius)',
                         padding: '1rem 1.25rem', marginBottom: '1.5rem', display: 'flex',
                         alignItems: 'center', justifyContent: 'space-between', gap: '1rem',
                     }}>

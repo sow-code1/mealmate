@@ -370,7 +370,7 @@ function ProfileContent() {
 
             {/* Danger Zone */}
             <div style={{
-                background: '#fef2f2', border: '1px solid #dc2626',
+                background: 'var(--danger-light)', border: '1px solid var(--danger-border)',
                 borderRadius: 'var(--radius)', padding: '1.5rem',
             }}>
                 <h3 style={{
@@ -385,7 +385,7 @@ function ProfileContent() {
                 <button
                     onClick={() => setShowDeleteConfirm(true)}
                     style={{
-                        padding: '0.5rem 1rem', border: '1px solid #dc2626',
+                        padding: '0.5rem 1rem', border: '1px solid var(--danger-border)',
                         borderRadius: 'var(--radius-sm)', fontFamily: 'DM Sans, sans-serif',
                         fontWeight: 600, fontSize: '0.875rem', color: 'var(--danger)',
                         background: 'var(--card)', cursor: 'pointer',

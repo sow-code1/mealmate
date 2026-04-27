@@ -414,7 +414,7 @@ function PantryContent() {
                                                     <>
                                                         <span>·</span>
                                                         <span style={{
-                                                            color: expiryStatus === 'expired' ? '#dc2626' :
+                                                            color: expiryStatus === 'expired' ? 'var(--danger)' :
                                                                    expiryStatus === 'critical' ? '#ea580c' :
                                                                    expiryStatus === 'warning' ? '#d97706' : 'var(--muted)',
                                                         }}>

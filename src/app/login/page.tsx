@@ -69,7 +69,7 @@ function LoginForm() {
 
     const bannerColors = {
         success: { bg: 'var(--primary-light)', border: 'var(--primary)', color: 'var(--primary)' },
-        error: { bg: '#fef2f2', border: '#fca5a5', color: '#dc2626' },
+        error: { bg: 'var(--danger-light)', border: 'var(--danger-border)', color: 'var(--danger)' },
         info: { bg: '#fdf3eb', border: '#f6ad55', color: '#c05621' },
     }
 
@@ -120,7 +120,7 @@ function LoginForm() {
                     transition: 'background 0.15s ease',
                 }}
                         onMouseEnter={e => (e.currentTarget.style.background = 'var(--muted-light)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'white')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'var(--card)')}
                 >
                     <img src="https://www.google.com/favicon.ico" style={{ width: 16, height: 16 }} alt="Google" />
                     Continue with Google

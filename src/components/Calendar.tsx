@@ -185,7 +185,7 @@ export default function Calendar({ selectedDate, onDateSelect, loggedDates }: Ca
                                     width: 4,
                                     height: 4,
                                     borderRadius: '50%',
-                                    background: selected ? 'white' : 'var(--primary)',
+                                    background: selected ? 'var(--card)' : 'var(--primary)',
                                 }} />
                             )}
                         </button>

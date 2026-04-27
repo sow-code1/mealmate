@@ -299,7 +299,7 @@ export default function RegisterPage() {
                     transition: 'background 0.15s ease',
                 }}
                         onMouseEnter={e => (e.currentTarget.style.background = 'var(--muted-light)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'white')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'var(--card)')}
                 >
                     <img src="https://www.google.com/favicon.ico" style={{ width: 16, height: 16 }} alt="Google" />
                     Continue with Google

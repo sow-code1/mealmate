@@ -207,7 +207,7 @@ export default async function Home() {
                 </p>
                 {session ? (
                     <Link href="/recipes/new" style={{
-                        background: 'white', color: 'var(--primary)',
+                        background: 'var(--card)', color: 'var(--primary)',
                         padding: '0.85rem 2rem', borderRadius: 'var(--radius-sm)',
                         fontFamily: 'DM Sans, sans-serif', fontWeight: 700,
                         fontSize: '0.95rem', textDecoration: 'none', display: 'inline-block',
@@ -217,7 +217,7 @@ export default async function Home() {
                     </Link>
                 ) : (
                     <Link href="/register" style={{
-                        background: 'white', color: 'var(--primary)',
+                        background: 'var(--card)', color: 'var(--primary)',
                         padding: '0.85rem 2rem', borderRadius: 'var(--radius-sm)',
                         fontFamily: 'DM Sans, sans-serif', fontWeight: 700,
                         fontSize: '0.95rem', textDecoration: 'none', display: 'inline-block',
