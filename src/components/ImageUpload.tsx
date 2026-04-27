@@ -140,7 +140,7 @@ export default function ImageUpload({ currentImageUrl, onUpload, onRemove }: Ima
                     </div>
                 )}
             </div>
-            {error && <p style={{ fontFamily: 'DM Sans, sans-serif', color: '#dc2626', fontSize: '0.8rem', marginTop: '0.5rem' }}>{error}</p>}
+            {error && <p style={{ fontFamily: 'DM Sans, sans-serif', color: 'var(--danger)', fontSize: '0.8rem', marginTop: '0.5rem' }}>{error}</p>}
             <input ref={inputRef} type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f) }} style={{ display: 'none' }} />
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>

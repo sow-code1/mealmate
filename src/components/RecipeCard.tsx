@@ -92,7 +92,7 @@ export default function RecipeCard({
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); onQuickView(id) }}
                                 title="Quick view"
                                 style={{
-                                    background: 'white', border: '1px solid var(--card-border)',
+                                    background: 'var(--card)', border: '1px solid var(--card-border)',
                                     borderRadius: '50%', width: 34, height: 34,
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     cursor: 'pointer', fontSize: '0.9rem',
@@ -107,7 +107,7 @@ export default function RecipeCard({
                         <button
                             onClick={toggleFavorite}
                             style={{
-                                background: 'white', border: '1px solid var(--card-border)',
+                                background: 'var(--card)', border: '1px solid var(--card-border)',
                                 borderRadius: '50%', width: 34, height: 34,
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 cursor: 'pointer', fontSize: '1rem',

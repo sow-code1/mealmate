@@ -478,7 +478,7 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                             border: '1.5px solid var(--primary)', borderRadius: 'var(--radius-sm)',
                             fontFamily: 'DM Sans, sans-serif', fontWeight: 600,
                             fontSize: '0.85rem', color: 'var(--primary)',
-                            textDecoration: 'none', background: 'white',
+                            textDecoration: 'none', background: 'var(--card)',
                         }}>
                             ✏️ Edit
                         </Link>

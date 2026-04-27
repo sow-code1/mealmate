@@ -114,7 +114,7 @@ function LoginForm() {
                     width: '100%', border: '1px solid var(--card-border)',
                     borderRadius: 'var(--radius-sm)', padding: '0.7rem',
                     fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '0.9rem',
-                    background: 'white', color: 'var(--foreground)',
+                    background: 'var(--card)', color: 'var(--foreground)',
                     cursor: 'pointer', display: 'flex', alignItems: 'center',
                     justifyContent: 'center', gap: '0.6rem',
                     transition: 'background 0.15s ease',

@@ -74,8 +74,8 @@ export default async function Home() {
                 </div>
             </div>
 
-            {/* Stats bar */}
-            <div style={{ background: 'var(--foreground)', padding: '1.25rem 1.5rem' }}>
+            {/* Stats bar — intentionally always dark for contrast */}
+            <div style={{ background: '#1c1917', padding: '1.25rem 1.5rem' }}>
                 <div style={{
                     maxWidth: 900, margin: '0 auto',
                     display: 'flex', justifyContent: 'center',

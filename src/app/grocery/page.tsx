@@ -4,6 +4,29 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Spinner from '@/components/Spinner'
 
+// Parses amounts like "30", "1/2", "2.5", "1 1/2" into a number
+function parseAmount(amount: string): number | null {
+    const trimmed = amount.trim()
+
+    // Handle mixed fractions like "1 1/2"
+    const mixed = trimmed.match(/^(\d+)\s+(\d+)\/(\d+)$/)
+    if (mixed) {
+        return parseInt(mixed[1]) + parseInt(mixed[2]) / parseInt(mixed[3])
+    }
+
+    // Handle simple fractions like "1/2"
+    const fraction = trimmed.match(/^(\d+)\/(\d+)$/)
+    if (fraction) {
+        return parseInt(fraction[1]) / parseInt(fraction[2])
+    }
+
+    // Handle plain numbers like "30" or "2.5"
+    const num = parseFloat(trimmed)
+    if (!isNaN(num)) return num
+
+    return null
+}
+
 interface Ingredient {
     name: string
     amount: string
@@ -27,12 +50,15 @@ export default function GroceryPage() {
     const [undoCountdown, setUndoCountdown] = useState(0)
     const [previousChecked, setPreviousChecked] = useState<Set<string>>(new Set())
     const [previousRemoved, setPreviousRemoved] = useState<Set<string>>(new Set())
+    const [haveQuantities, setHaveQuantities] = useState<Record<string, number>>({})
 
     useEffect(() => {
         const savedChecked = localStorage.getItem('grocery-checked')
         const savedRemoved = localStorage.getItem('grocery-removed')
+        const savedHave = localStorage.getItem('grocery-have')
         if (savedChecked) setChecked(new Set(JSON.parse(savedChecked)))
         if (savedRemoved) setRemoved(new Set(JSON.parse(savedRemoved)))
+        if (savedHave) setHaveQuantities(JSON.parse(savedHave))
     }, [])
 
     useEffect(() => {
@@ -49,6 +75,10 @@ export default function GroceryPage() {
     const saveRemoved = (next: Set<string>) => {
         setRemoved(next)
         localStorage.setItem('grocery-removed', JSON.stringify([...next]))
+    }
+    const saveHave = (next: Record<string, number>) => {
+        setHaveQuantities(next)
+        localStorage.setItem('grocery-have', JSON.stringify(next))
     }
 
     const toggleCheck = (key: string) => {
@@ -187,18 +217,18 @@ export default function GroceryPage() {
                             style={{
                                 background: 'none', border: '1px solid #dc2626', cursor: 'pointer',
                                 fontFamily: 'DM Sans, sans-serif', fontSize: '0.8rem',
-                                color: '#dc2626', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-sm)',
+                                color: 'var(--danger)', padding: '0.3rem 0.8rem', borderRadius: 'var(--radius-sm)',
                                 transition: 'all 0.15s',
                             }}
                             onMouseEnter={e => {
                                 const target = e.currentTarget as HTMLButtonElement
-                                target.style.background = '#dc2626'
+                                target.style.background = 'var(--danger)'
                                 target.style.color = 'white'
                             }}
                             onMouseLeave={e => {
                                 const target = e.currentTarget as HTMLButtonElement
                                 target.style.background = 'none'
-                                target.style.color = '#dc2626'
+                                target.style.color = 'var(--danger)'
                             }}
                         >
                             Reset List
@@ -216,7 +246,7 @@ export default function GroceryPage() {
                     justifyContent: 'space-between', gap: '1rem',
                 }}>
                     <div>
-                        <p style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '0.9rem', color: '#dc2626' }}>
+                        <p style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '0.9rem', color: 'var(--danger)' }}>
                             Reset all items?
                         </p>
                         <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.82rem', color: 'var(--muted)', marginTop: '0.2rem' }}>
@@ -227,7 +257,7 @@ export default function GroceryPage() {
                         <button
                             onClick={() => setShowConfirm(false)}
                             style={{
-                                background: 'white', border: '1px solid var(--card-border)',
+                                background: 'var(--card)', border: '1px solid var(--card-border)',
                                 cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
                                 fontSize: '0.8rem', padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-sm)',
                             }}
@@ -237,7 +267,7 @@ export default function GroceryPage() {
                         <button
                             onClick={confirmReset}
                             style={{
-                                background: '#dc2626', border: 'none', cursor: 'pointer',
+                                background: 'var(--danger)', border: 'none', cursor: 'pointer',
                                 fontFamily: 'DM Sans, sans-serif', fontSize: '0.8rem',
                                 color: 'white', padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-sm)',
                             }}
@@ -341,13 +371,59 @@ export default function GroceryPage() {
                                             : ing.recipeTitles.slice(0, -1).join(', ') + ' and ' + ing.recipeTitles[ing.recipeTitles.length - 1]
                                         }
                                     </span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: '0.5rem' }}>
+                                        <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>
+                                            Need:
+                                        </span>
+                                        <span style={{ fontWeight: 600, color: 'var(--foreground)', marginRight: '0.25rem' }}>
+                                            {ing.amount}{ing.unit ? ` ${ing.unit}` : ''}
+                                        </span>
+                                        <input
+                                            type="number"
+                                            step="0.1"
+                                            value={haveQuantities[key] || ''}
+                                            onChange={e => {
+                                                const val = parseFloat(e.target.value) || 0
+                                                setHaveQuantities(prev => ({ ...prev, [key]: val }))
+                                                saveHave({ ...haveQuantities, [key]: val })
+                                            }}
+                                            placeholder="0"
+                                            style={{
+                                                width: 50, border: '1px solid var(--card-border)',
+                                                borderRadius: 'var(--radius-sm)', padding: '0.25rem 0.4rem',
+                                                fontSize: '0.8rem', fontFamily: 'DM Sans, sans-serif',
+                                                outline: 'none',
+                                            }}
+                                        />
+                                        <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>
+                                            Have:
+                                        </span>
+                                        <span style={{
+                                            fontWeight: 600,
+                                            color: (haveQuantities[key] || 0) >= (parseAmount(ing.amount) || 0) ? '#16a34a' : 'var(--foreground)',
+                                            marginRight: '0.25rem',
+                                        }}>
+                                            {haveQuantities[key] || 0}
+                                        </span>
+                                        {ing.unit && <span>{ing.unit}</span>}
+                                        <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>
+                                            Still need:
+                                        </span>
+                                        <span style={{
+                                            fontWeight: 600,
+                                            color: (haveQuantities[key] || 0) >= (parseAmount(ing.amount) || 0) ? '#16a34a' : 'var(--foreground)',
+                                        }}>
+                                            {Math.max(0, (parseAmount(ing.amount) || 0) - (haveQuantities[key] || 0)).toFixed(1)}
+                                        </span>
+                                        {ing.unit && <span>{ing.unit}</span>}
+                                    </div>
                                 </div>
 
                                 {/* Remove */}
                                 <button
                                     onClick={() => removeItem(key)}
                                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--card-border)', fontSize: '1.1rem', lineHeight: 1, padding: '0 0.1rem', flexShrink: 0, transition: 'color 0.15s' }}
-                                    onMouseEnter={e => (e.currentTarget.style.color = '#dc2626')}
+                                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--danger)')}
                                     onMouseLeave={e => (e.currentTarget.style.color = 'var(--card-border)')}
                                     title="Remove item"
                                 >
@@ -432,7 +508,7 @@ export default function GroceryPage() {
                                             <button
                                                 onClick={() => removeItem(key)}
                                                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--card-border)', fontSize: '1.1rem', lineHeight: 1, padding: '0 0.1rem', flexShrink: 0, transition: 'color 0.15s' }}
-                                                onMouseEnter={e => (e.currentTarget.style.color = '#dc2626')}
+                                                onMouseEnter={e => (e.currentTarget.style.color = 'var(--danger)')}
                                                 onMouseLeave={e => (e.currentTarget.style.color = 'var(--card-border)')}
                                                 title="Remove item"
                                             >

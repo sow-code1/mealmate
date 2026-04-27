@@ -161,7 +161,7 @@ function MealPlannerContent() {
                             style={{
                                 padding: '0.55rem 1.25rem', border: '1px solid #dc2626',
                                 borderRadius: 'var(--radius-sm)', fontFamily: 'DM Sans, sans-serif',
-                                fontWeight: 600, fontSize: '0.875rem', color: '#dc2626',
+                                fontWeight: 600, fontSize: '0.875rem', color: 'var(--danger)',
                                 background: 'none', cursor: 'pointer',
                             }}
                         >
@@ -179,7 +179,7 @@ function MealPlannerContent() {
                         alignItems: 'center', justifyContent: 'space-between', gap: '1rem',
                     }}>
                         <div>
-                            <p style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '0.9rem', color: '#dc2626' }}>
+                            <p style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: '0.9rem', color: 'var(--danger)' }}>
                                 Remove all meals from this week's plan?
                             </p>
                         </div>
@@ -187,7 +187,7 @@ function MealPlannerContent() {
                             <button
                                 onClick={() => setShowClearConfirm(false)}
                                 style={{
-                                    background: 'white', border: '1px solid var(--card-border)',
+                                    background: 'var(--card)', border: '1px solid var(--card-border)',
                                     cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
                                     fontSize: '0.8rem', padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-sm)',
                                 }}
@@ -197,7 +197,7 @@ function MealPlannerContent() {
                             <button
                                 onClick={clearWeek}
                                 style={{
-                                    background: '#dc2626', border: 'none', cursor: 'pointer',
+                                    background: 'var(--danger)', border: 'none', cursor: 'pointer',
                                     fontFamily: 'DM Sans, sans-serif', fontSize: '0.8rem',
                                     color: 'white', padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-sm)',
                                 }}
@@ -284,7 +284,7 @@ function MealPlannerContent() {
                                                             color: 'var(--muted)', cursor: 'pointer',
                                                             textAlign: 'left', transition: 'color 0.1s',
                                                         }}
-                                                        onMouseEnter={e => (e.currentTarget.style.color = '#dc2626')}
+                                                        onMouseEnter={e => (e.currentTarget.style.color = 'var(--danger)')}
                                                         onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}
                                                     >
                                                         Remove ×

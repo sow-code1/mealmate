@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import AdminModeToggle from '@/components/AdminModeToggle'
 import SignInModal from '@/components/SignInModal'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export default function Navbar() {
     const pathname = usePathname()
@@ -73,6 +74,7 @@ export default function Navbar() {
                     {/* Right side */}
                     <div className="hidden sm:flex items-center gap-3">
                         {isAdmin && <AdminModeToggle />}
+                        <ThemeToggle />
                         {session ? (
                             <div className="flex items-center gap-3">
                                 <div style={{
@@ -99,7 +101,7 @@ export default function Navbar() {
                                         padding: '0.3rem 0.6rem', borderRadius: 'var(--radius-sm)',
                                         transition: 'color 0.15s ease',
                                     }}
-                                    onMouseEnter={e => (e.target as HTMLElement).style.color = '#dc2626'}
+                                    onMouseEnter={e => (e.target as HTMLElement).style.color = 'var(--danger)'}
                                     onMouseLeave={e => (e.target as HTMLElement).style.color = 'var(--muted)'}
                                 >
                                     Sign out
@@ -154,10 +156,11 @@ export default function Navbar() {
                             </Link>
                         ))}
                         {isAdmin && <div className="py-1"><AdminModeToggle /></div>}
+                        <ThemeToggle variant="menu" />
                         {session ? (
                             <button
                                 onClick={() => signOut({ callbackUrl: '/' })}
-                                style={{ textAlign: 'left', padding: '0.6rem 0.75rem', color: '#dc2626', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, fontSize: '0.95rem', background: 'none', border: 'none', cursor: 'pointer' }}
+                                style={{ textAlign: 'left', padding: '0.6rem 0.75rem', color: 'var(--danger)', fontFamily: 'DM Sans, sans-serif', fontWeight: 500, fontSize: '0.95rem', background: 'none', border: 'none', cursor: 'pointer' }}
                             >
                                 Sign out
                             </button>
