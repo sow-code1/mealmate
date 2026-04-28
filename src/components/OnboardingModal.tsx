@@ -64,7 +64,7 @@ export default function OnboardingModal({ onComplete }: Props) {
 
     return (
         <div className="modal-backdrop" style={{ zIndex: 2000 }}>
-            <div className="modal-panel" style={{ maxWidth: 460 }}>
+            <div className="modal-panel" style={{ maxWidth: 460, zIndex: 2001 }}>
                 <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
                     <span style={{ fontSize: '2rem' }}>🎯</span>
                     <h2 style={{

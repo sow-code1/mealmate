@@ -136,6 +136,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     session: { strategy: 'jwt' },
     pages: { signIn: '/login' },
     callbacks: {
+        async signIn({ user, account, profile }) {
+            console.log('signIn callback:', { user, account, profile })
+            return true
+        },
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id
@@ -157,6 +161,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     events: {
         async createUser({ user }) {
+            console.log('createUser event:', user)
             if (user.id) {
                 try {
                     await copyPresetsToUser(user.id)

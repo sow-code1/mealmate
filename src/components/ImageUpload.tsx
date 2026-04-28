@@ -88,6 +88,7 @@ export default function ImageUpload({ currentImageUrl, onUpload, onRemove }: Ima
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     transition: 'background 0.2s ease',
+                                    zIndex: 10,
                                 }}
                                 onMouseEnter={e => e.currentTarget.style.background = 'rgba(220,38,38,0.8)'}
                                 onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,0,0,0.6)'}
