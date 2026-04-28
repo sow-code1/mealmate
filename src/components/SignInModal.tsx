@@ -56,6 +56,15 @@ export default function SignInModal({ isOpen, onClose, returnTo }: Props) {
 
     if (!isOpen) return null
 
+    // Never redirect back to auth pages after sign-in
+    const safeReturnTo = (() => {
+        if (!returnTo) return '/recipes'
+        if (returnTo === '/login' || returnTo === '/register' || returnTo.startsWith('/login?') || returnTo.startsWith('/register?')) {
+            return '/recipes'
+        }
+        return returnTo
+    })()
+
     const handleLogin = async () => {
         if (!email || !password) { toast.error('Please enter your email and password'); return }
         setLoading(true)
@@ -67,11 +76,11 @@ export default function SignInModal({ isOpen, onClose, returnTo }: Props) {
         } else {
             toast.success('Welcome back!')
             onClose()
-            window.location.href = returnTo || '/recipes'
+            window.location.href = safeReturnTo
         }
     }
 
-    const handleGoogle = () => signIn('google', { callbackUrl: returnTo || '/recipes' })
+    const handleGoogle = () => signIn('google', { callbackUrl: safeReturnTo })
 
     return (
         <div
