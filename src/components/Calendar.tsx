@@ -1,66 +1,63 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 interface CalendarProps {
     selectedDate: string
     onDateSelect: (date: string) => void
-    loggedDates: string[] // Array of date strings that have logged entries
+    loggedDates: string[]
+}
+
+const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+
+function pad(n: number): string {
+    return String(n).padStart(2, '0')
+}
+
+function fmt(d: Date): string {
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 }
 
 export default function Calendar({ selectedDate, onDateSelect, loggedDates }: CalendarProps) {
-    const [currentMonth, setCurrentMonth] = useState(new Date())
+    const [cursor, setCursor] = useState(() => {
+        const d = selectedDate ? new Date(selectedDate + 'T12:00:00') : new Date()
+        return new Date(d.getFullYear(), d.getMonth(), 1)
+    })
 
     const today = new Date()
-    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+    const todayStr = fmt(today)
+    const loggedSet = new Set(loggedDates)
 
-    const getMonthData = (date: Date) => {
-        const year = date.getFullYear()
-        const month = date.getMonth()
-        const firstDay = new Date(year, month, 1)
-        const lastDay = new Date(year, month + 1, 0)
-        const startDay = firstDay.getDay()
-        const totalDays = lastDay.getDate()
+    const year = cursor.getFullYear()
+    const month = cursor.getMonth()
+    const firstDay = new Date(year, month, 1)
+    const startDow = firstDay.getDay()
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
+    const daysInPrev = new Date(year, month, 0).getDate()
 
-        const days = []
-        for (let i = 0; i < startDay; i++) {
-            days.push(null)
-        }
-        for (let i = 1; i <= totalDays; i++) {
-            days.push(new Date(year, month, i))
-        }
-
-        return { days, monthName: date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) }
+    const cells: { date: Date; inMonth: boolean }[] = []
+    for (let i = startDow - 1; i >= 0; i--) {
+        cells.push({ date: new Date(year, month - 1, daysInPrev - i), inMonth: false })
+    }
+    for (let i = 1; i <= daysInMonth; i++) {
+        cells.push({ date: new Date(year, month, i), inMonth: true })
+    }
+    while (cells.length < 42) {
+        const last = cells[cells.length - 1].date
+        cells.push({ date: new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1), inMonth: false })
     }
 
-    const { days, monthName } = getMonthData(currentMonth)
+    const monthLabel = cursor.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 
-    const prevMonth = () => {
-        setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))
-    }
+    const goPrev = () => setCursor(new Date(year, month - 1, 1))
+    const goNext = () => setCursor(new Date(year, month + 1, 1))
 
-    const nextMonth = () => {
-        setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))
-    }
-
-    const formatDate = (date: Date) => {
-        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
-    }
-
-    const isToday = (date: Date) => {
-        return formatDate(date) === todayStr
-    }
-
-    const isSelected = (date: Date) => {
-        return formatDate(date) === selectedDate
-    }
-
-    const isLogged = (date: Date) => {
-        return loggedDates.includes(formatDate(date))
-    }
-
-    const isFuture = (date: Date) => {
-        return formatDate(date) > todayStr
+    const navBtn: React.CSSProperties = {
+        width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'transparent', border: '1px solid var(--card-border)',
+        borderRadius: 'var(--radius-sm)', cursor: 'pointer',
+        color: 'var(--muted)', fontSize: '1rem', lineHeight: 1,
+        transition: 'color 0.15s ease, background 0.15s ease',
     }
 
     return (
@@ -68,126 +65,83 @@ export default function Calendar({ selectedDate, onDateSelect, loggedDates }: Ca
             background: 'var(--card)',
             border: '1px solid var(--card-border)',
             borderRadius: 'var(--radius)',
-            padding: '1rem',
-            maxWidth: 320,
+            padding: '1rem 0.85rem 0.85rem',
+            width: '100%',
+            maxWidth: 360,
         }}>
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem', padding: '0 0.25rem' }}>
                 <button
-                    onClick={prevMonth}
-                    style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontSize: '1rem',
-                        color: 'var(--muted)',
-                        padding: '0.25rem 0.5rem',
-                        borderRadius: 'var(--radius-sm)',
-                    }}
-                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'var(--primary)'}
-                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--muted)'}
+                    onClick={goPrev}
+                    aria-label="Previous month"
+                    style={navBtn}
+                    onMouseEnter={e => { e.currentTarget.style.color = 'var(--primary)'; e.currentTarget.style.background = 'var(--muted-light)' }}
+                    onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.background = 'transparent' }}
                 >
                     ‹
                 </button>
                 <span style={{
-                    fontFamily: 'DM Sans, sans-serif',
+                    fontFamily: 'Playfair Display, serif',
                     fontWeight: 600,
-                    fontSize: '0.9rem',
+                    fontSize: '1rem',
                     color: 'var(--foreground)',
+                    letterSpacing: '-0.01em',
                 }}>
-                    {monthName}
+                    {monthLabel}
                 </span>
                 <button
-                    onClick={nextMonth}
-                    style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontSize: '1rem',
-                        color: 'var(--muted)',
-                        padding: '0.25rem 0.5rem',
-                        borderRadius: 'var(--radius-sm)',
-                    }}
-                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'var(--primary)'}
-                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--muted)'}
+                    onClick={goNext}
+                    aria-label="Next month"
+                    style={navBtn}
+                    onMouseEnter={e => { e.currentTarget.style.color = 'var(--primary)'; e.currentTarget.style.background = 'var(--muted-light)' }}
+                    onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.background = 'transparent' }}
                 >
                     ›
                 </button>
             </div>
 
-            {/* Day headers */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.25rem', marginBottom: '0.5rem' }}>
-                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
-                    <div key={day} style={{
+            {/* Weekday labels */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: '0.35rem' }}>
+                {DAY_LABELS.map((d, i) => (
+                    <div key={i} style={{
                         textAlign: 'center',
                         fontFamily: 'DM Sans, sans-serif',
                         fontSize: '0.7rem',
                         fontWeight: 600,
                         color: 'var(--muted)',
                         textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                        padding: '0.35rem 0',
                     }}>
-                        {day}
+                        {d}
                     </div>
                 ))}
             </div>
 
-            {/* Calendar grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.25rem' }}>
-                {days.map((date, i) => {
-                    if (!date) {
-                        return <div key={i} style={{ height: 32 }} />
-                    }
+            {/* Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
+                {cells.map(({ date, inMonth }, i) => {
+                    const dateStr = fmt(date)
+                    const isToday = dateStr === todayStr
+                    const isSelected = dateStr === selectedDate
+                    const isLogged = loggedSet.has(dateStr)
+                    const isFuture = dateStr > todayStr
 
-                    const dateStr = formatDate(date)
-                    const today = isToday(date)
-                    const selected = isSelected(date)
-                    const logged = isLogged(date)
-                    const future = isFuture(date)
+                    const classes = ['cal-cell']
+                    if (isSelected) classes.push('cal-selected')
+                    else if (isToday) classes.push('cal-today')
+                    if (!inMonth) classes.push('cal-muted')
 
                     return (
                         <button
-                            key={dateStr}
-                            onClick={() => !future && onDateSelect(dateStr)}
-                            disabled={future}
-                            style={{
-                                height: 32,
-                                borderRadius: 'var(--radius-sm)',
-                                border: selected ? '2px solid var(--primary)' : '1px solid var(--card-border)',
-                                background: today ? 'var(--primary-light)' : (selected ? 'var(--primary)' : 'var(--card)'),
-                                color: selected ? 'white' : (today ? 'var(--primary)' : (future ? 'var(--card-border)' : 'var(--foreground)')),
-                                cursor: future ? 'not-allowed' : 'pointer',
-                                fontFamily: 'DM Sans, sans-serif',
-                                fontSize: '0.8rem',
-                                fontWeight: today ? 700 : 500,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                position: 'relative',
-                                opacity: future ? 0.4 : 1,
-                                transition: 'all 0.15s ease',
-                            }}
-                            onMouseEnter={e => {
-                                if (!future && !selected) {
-                                    (e.currentTarget as HTMLElement).style.background = 'var(--muted-light)'
-                                }
-                            }}
-                            onMouseLeave={e => {
-                                if (!future && !selected) {
-                                    (e.currentTarget as HTMLElement).style.background = today ? 'var(--primary-light)' : 'var(--card)'
-                                }
-                            }}
+                            key={i}
+                            type="button"
+                            disabled={isFuture}
+                            onClick={() => onDateSelect(dateStr)}
+                            className={classes.join(' ')}
                         >
                             {date.getDate()}
-                            {logged && (
-                                <div style={{
-                                    position: 'absolute',
-                                    bottom: 2,
-                                    width: 4,
-                                    height: 4,
-                                    borderRadius: '50%',
-                                    background: selected ? 'var(--card)' : 'var(--primary)',
-                                }} />
-                            )}
+                            {isLogged && <span className="cal-dot" />}
                         </button>
                     )
                 })}

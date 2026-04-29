@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { normalizeIngredientName } from '@/lib/normalize'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 import { cookies } from 'next/headers'
@@ -64,7 +65,12 @@ export async function PUT(
             where: { id: recipeId },
             data: {
                 title, description, category, prepTime, cookTime, servings, tags, imageUrl,
-                ingredients: ingredients ? { create: ingredients } : undefined,
+                ingredients: ingredients ? {
+                    create: (ingredients as { name: string; amount: string; unit?: string | null }[]).map(i => ({
+                        ...i,
+                        name: normalizeIngredientName(i.name),
+                    })),
+                } : undefined,
                 steps: steps ? { create: steps } : undefined,
             },
             include: {

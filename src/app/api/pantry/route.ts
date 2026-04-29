@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
+import { normalizeIngredientName } from '@/lib/normalize'
 
 export async function GET() {
     try {
@@ -33,7 +34,7 @@ export async function POST(request: Request) {
 
         const item = await prisma.pantryItem.create({
             data: {
-                name,
+                name: normalizeIngredientName(name),
                 quantity: parseFloat(quantity),
                 unit: unit || null,
                 category: category || null,

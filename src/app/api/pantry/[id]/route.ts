@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
+import { normalizeIngredientName } from '@/lib/normalize'
 
 export async function PATCH(
     request: Request,
@@ -23,7 +24,7 @@ export async function PATCH(
         const updated = await prisma.pantryItem.update({
             where: { id: parseInt(id) },
             data: {
-                ...(name !== undefined && { name }),
+                ...(name !== undefined && { name: normalizeIngredientName(name) }),
                 ...(quantity !== undefined && { quantity: parseFloat(quantity) }),
                 ...(unit !== undefined && { unit }),
                 ...(category !== undefined && { category }),

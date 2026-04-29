@@ -32,6 +32,8 @@ interface Ingredient {
     amount: string
     unit: string | null
     recipeTitles: string[]
+    pantryHave: number
+    needed: number | null
 }
 
 interface GroupedRecipe {
@@ -61,11 +63,22 @@ export default function GroceryPage() {
         if (savedHave) setHaveQuantities(JSON.parse(savedHave))
     }, [])
 
-    useEffect(() => {
+    const refetchGrocery = () => {
         fetch('/api/grocery')
             .then(r => r.json())
             .then(data => { setIngredients(data); setLoading(false) })
             .catch(() => setLoading(false))
+    }
+
+    useEffect(() => {
+        refetchGrocery()
+        // Re-pull when user returns to tab — picks up pantry edits made elsewhere
+        const onFocus = () => refetchGrocery()
+        window.addEventListener('focus', onFocus)
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) refetchGrocery() })
+        return () => {
+            window.removeEventListener('focus', onFocus)
+        }
     }, [])
 
     const saveChecked = (next: Set<string>) => {
@@ -323,113 +336,22 @@ export default function GroceryPage() {
                 </div>
             ) : view === 'combined' ? (
                 <div style={{ background: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-                    {visibleIngredients.map((ing, idx) => {
+                    {visibleIngredients.map((ing) => {
                         const key = ingredientKey(ing)
                         const isChecked = checked.has(key)
-                        const isLast = idx === visibleIngredients.length - 1
                         return (
-                            <div
+                            <GroceryRow
                                 key={key}
-                                style={{
-                                    display: 'flex', alignItems: 'center', gap: '0.85rem',
-                                    padding: '0.8rem 1.25rem',
-                                    borderBottom: isLast ? 'none' : '1px solid var(--card-border)',
-                                    background: isChecked ? 'var(--muted-light)' : 'var(--card)',
-                                    transition: 'background 0.15s',
-                                    opacity: isChecked ? 0.6 : 1,
+                                ing={ing}
+                                isChecked={isChecked}
+                                manualHave={haveQuantities[key]}
+                                onToggle={() => toggleCheck(key)}
+                                onHaveChange={(val) => {
+                                    setHaveQuantities(prev => ({ ...prev, [key]: val }))
+                                    saveHave({ ...haveQuantities, [key]: val })
                                 }}
-                            >
-                                {/* Checkbox */}
-                                <div
-                                    onClick={() => toggleCheck(key)}
-                                    style={{
-                                        width: 20, height: 20, borderRadius: 6, flexShrink: 0, cursor: 'pointer',
-                                        border: `2px solid ${isChecked ? 'var(--primary)' : 'var(--card-border)'}`,
-                                        background: isChecked ? 'var(--primary)' : 'transparent',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        transition: 'all 0.15s',
-                                    }}
-                                >
-                                    {isChecked && (
-                                        <span style={{ color: 'white', fontSize: '0.65rem', fontWeight: 700, lineHeight: 1 }}>✓</span>
-                                    )}
-                                </div>
-
-                                {/* Text */}
-                                <div onClick={() => toggleCheck(key)} style={{ flex: 1, cursor: 'pointer' }}>
-                                    <span style={{
-                                        fontFamily: 'DM Sans, sans-serif', fontSize: '0.9rem',
-                                        color: 'var(--foreground)', fontWeight: 500,
-                                        textDecoration: isChecked ? 'line-through' : 'none',
-                                    }}>
-                                        <strong style={{ fontWeight: 700 }}>{ing.amount}{ing.unit ? ` ${ing.unit}` : ''}</strong>{' '}
-                                        {ing.name}
-                                    </span>
-                                    <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.75rem', color: 'var(--muted)', marginLeft: '0.4rem' }}>
-                                        {ing.recipeTitles.length === 1
-                                            ? ing.recipeTitles[0]
-                                            : ing.recipeTitles.slice(0, -1).join(', ') + ' and ' + ing.recipeTitles[ing.recipeTitles.length - 1]
-                                        }
-                                    </span>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: '0.5rem' }}>
-                                        <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>
-                                            Need:
-                                        </span>
-                                        <span style={{ fontWeight: 600, color: 'var(--foreground)', marginRight: '0.25rem' }}>
-                                            {ing.amount}{ing.unit ? ` ${ing.unit}` : ''}
-                                        </span>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={haveQuantities[key] || ''}
-                                            onChange={e => {
-                                                const val = parseFloat(e.target.value) || 0
-                                                setHaveQuantities(prev => ({ ...prev, [key]: val }))
-                                                saveHave({ ...haveQuantities, [key]: val })
-                                            }}
-                                            placeholder="0"
-                                            style={{
-                                                width: 50, border: '1px solid var(--card-border)',
-                                                borderRadius: 'var(--radius-sm)', padding: '0.25rem 0.4rem',
-                                                fontSize: '0.8rem', fontFamily: 'DM Sans, sans-serif',
-                                                outline: 'none',
-                                            }}
-                                        />
-                                        <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>
-                                            Have:
-                                        </span>
-                                        <span style={{
-                                            fontWeight: 600,
-                                            color: (haveQuantities[key] || 0) >= (parseAmount(ing.amount) || 0) ? '#16a34a' : 'var(--foreground)',
-                                            marginRight: '0.25rem',
-                                        }}>
-                                            {haveQuantities[key] || 0}
-                                        </span>
-                                        {ing.unit && <span>{ing.unit}</span>}
-                                        <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>
-                                            Still need:
-                                        </span>
-                                        <span style={{
-                                            fontWeight: 600,
-                                            color: (haveQuantities[key] || 0) >= (parseAmount(ing.amount) || 0) ? '#16a34a' : 'var(--foreground)',
-                                        }}>
-                                            {Math.max(0, (parseAmount(ing.amount) || 0) - (haveQuantities[key] || 0)).toFixed(1)}
-                                        </span>
-                                        {ing.unit && <span>{ing.unit}</span>}
-                                    </div>
-                                </div>
-
-                                {/* Remove */}
-                                <button
-                                    onClick={() => removeItem(key)}
-                                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--card-border)', fontSize: '1.1rem', lineHeight: 1, padding: '0 0.1rem', flexShrink: 0, transition: 'color 0.15s' }}
-                                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--danger)')}
-                                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--card-border)')}
-                                    title="Remove item"
-                                >
-                                    ×
-                                </button>
-                            </div>
+                                onRemove={() => removeItem(key)}
+                            />
                         )
                     })}
                 </div>
@@ -465,56 +387,22 @@ export default function GroceryPage() {
                                 </div>
 
                                 {/* Ingredients */}
-                                {group.ingredients.map((ing, idx) => {
+                                {group.ingredients.map((ing) => {
                                     const key = ingredientKey(ing)
                                     const isChecked = checked.has(key)
-                                    const isLast = idx === group.ingredients.length - 1
                                     return (
-                                        <div
+                                        <GroceryRow
                                             key={key}
-                                            style={{
-                                                display: 'flex', alignItems: 'center', gap: '0.85rem',
-                                                padding: '0.75rem 1.25rem',
-                                                borderBottom: isLast ? 'none' : '1px solid var(--card-border)',
-                                                background: isChecked ? 'var(--muted-light)' : 'var(--card)',
-                                                opacity: isChecked ? 0.6 : 1,
-                                                transition: 'all 0.15s',
+                                            ing={ing}
+                                            isChecked={isChecked}
+                                            manualHave={haveQuantities[key]}
+                                            onToggle={() => toggleCheck(key)}
+                                            onHaveChange={(val) => {
+                                                setHaveQuantities(prev => ({ ...prev, [key]: val }))
+                                                saveHave({ ...haveQuantities, [key]: val })
                                             }}
-                                        >
-                                            <div
-                                                onClick={() => toggleCheck(key)}
-                                                style={{
-                                                    width: 20, height: 20, borderRadius: 6, flexShrink: 0, cursor: 'pointer',
-                                                    border: `2px solid ${isChecked ? 'var(--primary)' : 'var(--card-border)'}`,
-                                                    background: isChecked ? 'var(--primary)' : 'transparent',
-                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                    transition: 'all 0.15s',
-                                                }}
-                                            >
-                                                {isChecked && <span style={{ color: 'white', fontSize: '0.65rem', fontWeight: 700, lineHeight: 1 }}>✓</span>}
-                                            </div>
-                                            <span
-                                                onClick={() => toggleCheck(key)}
-                                                style={{
-                                                    flex: 1, cursor: 'pointer',
-                                                    fontFamily: 'DM Sans, sans-serif', fontSize: '0.9rem',
-                                                    color: 'var(--foreground)', fontWeight: 400,
-                                                    textDecoration: isChecked ? 'line-through' : 'none',
-                                                }}
-                                            >
-                                                <strong style={{ fontWeight: 700 }}>{ing.amount}{ing.unit ? ` ${ing.unit}` : ''}</strong>{' '}
-                                                {ing.name}
-                                            </span>
-                                            <button
-                                                onClick={() => removeItem(key)}
-                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--card-border)', fontSize: '1.1rem', lineHeight: 1, padding: '0 0.1rem', flexShrink: 0, transition: 'color 0.15s' }}
-                                                onMouseEnter={e => (e.currentTarget.style.color = 'var(--danger)')}
-                                                onMouseLeave={e => (e.currentTarget.style.color = 'var(--card-border)')}
-                                                title="Remove item"
-                                            >
-                                                ×
-                                            </button>
-                                        </div>
+                                            onRemove={() => removeItem(key)}
+                                        />
                                     )
                                 })}
                             </div>
@@ -522,6 +410,130 @@ export default function GroceryPage() {
                     })}
                 </div>
             )}
+        </div>
+    )
+}
+
+// ─── Row component ────────────────────────────────────────────────
+interface RowProps {
+    ing: Ingredient
+    isChecked: boolean
+    manualHave: number | undefined
+    onToggle: () => void
+    onHaveChange: (v: number) => void
+    onRemove: () => void
+}
+
+function GroceryRow({ ing, isChecked, manualHave, onToggle, onHaveChange, onRemove }: RowProps) {
+    const needed = ing.needed ?? parseAmount(ing.amount) ?? 0
+    const have = manualHave !== undefined ? manualHave : ing.pantryHave
+    const stillNeed = Math.max(0, needed - have)
+    const hasNumeric = ing.needed !== null
+    const fullySatisfied = hasNumeric && have >= needed && needed > 0
+    const partial = hasNumeric && have > 0 && have < needed
+    const fmt = (n: number) => parseFloat(n.toFixed(2)).toString()
+    const unitSuffix = ing.unit ? ` ${ing.unit}` : ''
+
+    return (
+        <div
+            className="grocery-row"
+            style={{
+                background: isChecked ? 'var(--muted-light)' : 'var(--card)',
+                opacity: isChecked ? 0.55 : 1,
+            }}
+        >
+            {/* Checkbox */}
+            <div
+                className="grocery-check"
+                onClick={onToggle}
+                style={{
+                    width: 22, height: 22, borderRadius: 6, cursor: 'pointer',
+                    border: `2px solid ${isChecked ? 'var(--primary)' : 'var(--card-border)'}`,
+                    background: isChecked ? 'var(--primary)' : 'transparent',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.15s',
+                }}
+            >
+                {isChecked && <span style={{ color: 'white', fontSize: '0.7rem', fontWeight: 700, lineHeight: 1 }}>✓</span>}
+            </div>
+
+            {/* Name + recipes */}
+            <div className="grocery-name" onClick={onToggle} style={{ cursor: 'pointer', minWidth: 0 }}>
+                <div style={{
+                    fontFamily: 'DM Sans, sans-serif', fontSize: '0.95rem',
+                    color: 'var(--foreground)', fontWeight: 600,
+                    textDecoration: isChecked ? 'line-through' : 'none',
+                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>
+                    {ing.name}
+                </div>
+                <div style={{
+                    fontFamily: 'DM Sans, sans-serif', fontSize: '0.72rem',
+                    color: 'var(--muted)', marginTop: 2,
+                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>
+                    {ing.recipeTitles.join(', ')}
+                </div>
+                {fullySatisfied && (
+                    <span className="grocery-pantry-badge" style={{ marginTop: 4 }}>
+                        ✓ In Pantry
+                    </span>
+                )}
+            </div>
+
+            {/* Quantities wrapper */}
+            <div className="grocery-quantities">
+                {/* Need */}
+                <div className="grocery-qty">
+                    <span className="grocery-qty-label">Need</span>
+                    <span className="grocery-qty-value">{ing.amount}{unitSuffix}</span>
+                </div>
+
+                {/* Have */}
+                <div className="grocery-qty">
+                    <span className="grocery-qty-label">Have</span>
+                    <input
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        className="grocery-have-input"
+                        value={have || ''}
+                        placeholder={ing.pantryHave > 0 ? fmt(ing.pantryHave) : '0'}
+                        onChange={e => onHaveChange(parseFloat(e.target.value) || 0)}
+                    />
+                </div>
+
+                {/* Still need */}
+                <div className="grocery-qty">
+                    <span className="grocery-qty-label">Still need</span>
+                    {hasNumeric ? (
+                        <span className={`grocery-qty-value${stillNeed === 0 ? ' satisfied' : partial ? ' partial' : ''}`}>
+                            {fmt(stillNeed)}{unitSuffix}
+                        </span>
+                    ) : (
+                        <span className="grocery-qty-value" style={{ color: 'var(--muted)' }}>—</span>
+                    )}
+                </div>
+            </div>
+
+            {/* Remove */}
+            <button
+                className="grocery-del"
+                onClick={onRemove}
+                aria-label="Remove item"
+                title="Remove item"
+                style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    color: 'var(--card-border)', fontSize: '1.25rem', lineHeight: 1,
+                    width: 28, height: 28, borderRadius: 'var(--radius-sm)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'color 0.15s, background 0.15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = 'var(--danger)'; e.currentTarget.style.background = 'var(--danger-light)' }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'var(--card-border)'; e.currentTarget.style.background = 'transparent' }}
+            >
+                ×
+            </button>
         </div>
     )
 }

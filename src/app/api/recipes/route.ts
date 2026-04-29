@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
+import { normalizeIngredientName } from '@/lib/normalize'
 
 export async function GET(request: NextRequest) {
     try {
@@ -46,7 +47,12 @@ export async function POST(request: NextRequest) {
                 imageUrl,
                 userId: session.user.id,
                 isPublic: false,
-                ingredients: { create: ingredients ?? [] },
+                ingredients: {
+                    create: (ingredients ?? []).map((i: { name: string; amount: string; unit?: string | null }) => ({
+                        ...i,
+                        name: normalizeIngredientName(i.name),
+                    })),
+                },
                 steps: { create: steps ?? [] },
             },
             include: {

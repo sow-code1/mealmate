@@ -15,30 +15,25 @@ function getWeekStart() {
 // Parses amounts like "30", "1/2", "2.5", "1 1/2" into a number
 function parseAmount(amount: string): number | null {
     const trimmed = amount.trim()
-
-    // Handle mixed fractions like "1 1/2"
     const mixed = trimmed.match(/^(\d+)\s+(\d+)\/(\d+)$/)
-    if (mixed) {
-        return parseInt(mixed[1]) + parseInt(mixed[2]) / parseInt(mixed[3])
-    }
-
-    // Handle simple fractions like "1/2"
+    if (mixed) return parseInt(mixed[1]) + parseInt(mixed[2]) / parseInt(mixed[3])
     const fraction = trimmed.match(/^(\d+)\/(\d+)$/)
-    if (fraction) {
-        return parseInt(fraction[1]) / parseInt(fraction[2])
-    }
-
-    // Handle plain numbers like "30" or "2.5"
+    if (fraction) return parseInt(fraction[1]) / parseInt(fraction[2])
     const num = parseFloat(trimmed)
     if (!isNaN(num)) return num
-
     return null
 }
 
-// Formats a number back to a clean string — avoids ugly floats like "1.9999999"
 function formatAmount(value: number): string {
-    // Round to 2 decimal places, then strip trailing zeros
     return parseFloat(value.toFixed(2)).toString()
+}
+
+function normalize(s: string): string {
+    return s.toLowerCase().trim()
+}
+
+function titleCase(s: string): string {
+    return s.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
 }
 
 export async function GET() {
@@ -47,66 +42,68 @@ export async function GET() {
         if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
         const weekStart = getWeekStart()
-        const mealPlan = await prisma.mealPlan.findFirst({
-            where: { weekStart, userId: session.user.id },
-            include: {
-                slots: {
-                    include: {
-                        recipe: { include: { ingredients: true } },
-                    },
-                },
-            },
-        })
+        const [mealPlan, pantryItems] = await Promise.all([
+            prisma.mealPlan.findFirst({
+                where: { weekStart, userId: session.user.id },
+                include: { slots: { include: { recipe: { include: { ingredients: true } } } } },
+            }),
+            prisma.pantryItem.findMany({ where: { userId: session.user.id } }),
+        ])
 
         if (!mealPlan) return NextResponse.json([])
 
-        // Count how many times each recipe appears in the meal plan
         const recipeCounts = new Map<number, number>()
-        mealPlan.slots.forEach((slot) => {
-            if (slot.recipe) {
-                recipeCounts.set(slot.recipe.id, (recipeCounts.get(slot.recipe.id) ?? 0) + 1)
-            }
+        mealPlan.slots.forEach(slot => {
+            if (slot.recipe) recipeCounts.set(slot.recipe.id, (recipeCounts.get(slot.recipe.id) ?? 0) + 1)
         })
 
-        // Collect ingredients once per unique recipe, with amounts multiplied by slot count
-        const seenRecipeIds = new Set<number>()
-        const ingredientMap = new Map<string, { amount: number; unit: string | null; recipeTitles: string[] }>()
+        // Build pantry lookup keyed by normalized ingredient name → total quantity
+        const pantryMap = new Map<string, number>()
+        pantryItems.forEach(p => {
+            const key = normalize(p.name)
+            pantryMap.set(key, (pantryMap.get(key) ?? 0) + p.quantity)
+        })
 
-        mealPlan.slots.forEach((slot) => {
+        const seenRecipeIds = new Set<number>()
+        const ingredientMap = new Map<string, { displayName: string; amount: number; unit: string | null; rawAmount?: string; recipeTitles: string[] }>()
+
+        mealPlan.slots.forEach(slot => {
             if (slot.recipe && !seenRecipeIds.has(slot.recipe.id)) {
                 seenRecipeIds.add(slot.recipe.id)
                 const count = recipeCounts.get(slot.recipe.id) ?? 1
 
-                slot.recipe.ingredients.forEach((ing) => {
+                slot.recipe.ingredients.forEach(ing => {
                     const parsed = parseAmount(ing.amount)
-                    const scaledAmount = parsed !== null
-                        ? parsed * count
-                        : null // if unparseable, we can't aggregate
+                    const normName = normalize(ing.name)
+                    const normUnit = (ing.unit || '').toLowerCase().trim()
 
-                    const key = `${ing.name.toLowerCase()}|${ing.unit || ''}`
-
-                    if (scaledAmount !== null) {
+                    if (parsed !== null) {
+                        const key = `${normName}|${normUnit}`
                         const existing = ingredientMap.get(key)
+                        const scaled = parsed * count
                         if (existing) {
-                            existing.amount += scaledAmount
+                            existing.amount += scaled
                             existing.recipeTitles.push(slot.recipe!.title)
                         } else {
                             ingredientMap.set(key, {
-                                amount: scaledAmount,
+                                displayName: titleCase(normName),
+                                amount: scaled,
                                 unit: ing.unit,
                                 recipeTitles: [slot.recipe!.title],
                             })
                         }
                     } else {
-                        // For unparseable amounts (e.g. "to taste"), keep as separate entries
-                        const key = `${ing.name.toLowerCase()}|${ing.unit || ''}|${ing.amount}`
+                        // Unparseable: keep as separate entry per raw amount
+                        const key = `${normName}|${normUnit}|${ing.amount}`
                         const existing = ingredientMap.get(key)
                         if (existing) {
                             existing.recipeTitles.push(slot.recipe!.title)
                         } else {
                             ingredientMap.set(key, {
-                                amount: 0, // placeholder
+                                displayName: titleCase(normName),
+                                amount: 0,
                                 unit: ing.unit,
+                                rawAmount: ing.amount,
                                 recipeTitles: [slot.recipe!.title],
                             })
                         }
@@ -115,33 +112,39 @@ export async function GET() {
             }
         })
 
-        // Convert map to array
-        const ingredients: { name: string; amount: string; unit: string | null; recipeTitles: string[] }[] = []
+        const ingredients: {
+            name: string
+            amount: string
+            unit: string | null
+            recipeTitles: string[]
+            pantryHave: number
+            needed: number | null
+        }[] = []
 
-        ingredientMap.forEach((value, key) => {
-            const [name, unit, rawAmount] = key.split('|')
-            if (rawAmount) {
-                // Unparseable amount
+        ingredientMap.forEach(value => {
+            const pantryHave = pantryMap.get(normalize(value.displayName)) ?? 0
+            if (value.rawAmount !== undefined) {
                 ingredients.push({
-                    name: name.charAt(0).toUpperCase() + name.slice(1),
-                    amount: rawAmount,
-                    unit: unit || null,
+                    name: value.displayName,
+                    amount: value.rawAmount,
+                    unit: value.unit,
                     recipeTitles: value.recipeTitles,
+                    pantryHave,
+                    needed: null,
                 })
             } else {
-                // Parsed and aggregated amount
                 ingredients.push({
-                    name: name.charAt(0).toUpperCase() + name.slice(1),
+                    name: value.displayName,
                     amount: formatAmount(value.amount),
-                    unit: unit || null,
+                    unit: value.unit,
                     recipeTitles: value.recipeTitles,
+                    pantryHave,
+                    needed: value.amount,
                 })
             }
         })
 
-        // Sort by name
         ingredients.sort((a, b) => a.name.localeCompare(b.name))
-
         return NextResponse.json(ingredients)
     } catch (error) {
         console.error(error)
