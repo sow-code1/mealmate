@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import toast from 'react-hot-toast'
 import Spinner from '@/components/Spinner'
 import AuthGuard from '@/components/AuthGuard'
+import UnitSelect from '@/components/UnitSelect'
 
 interface PantryItem {
     id: number
@@ -49,7 +51,12 @@ function PantryContent() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!form.name || !form.quantity) return
+        if (!form.name.trim()) { toast.error('Please enter an item name'); return }
+        const qty = parseFloat(form.quantity)
+        if (!form.quantity || isNaN(qty) || qty < 0.01) {
+            toast.error('Please enter a valid amount')
+            return
+        }
 
         try {
             const res = await fetch('/api/pantry', {
@@ -57,7 +64,7 @@ function PantryContent() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: form.name,
-                    quantity: form.quantity,
+                    quantity: qty,
                     unit: form.unit || null,
                     category: form.category || null,
                     expiryDate: form.expiryDate || null,
@@ -68,9 +75,12 @@ function PantryContent() {
                 setItems(prev => [...prev, item])
                 setForm({ name: '', quantity: '', unit: '', category: '', expiryDate: '' })
                 setShowAddForm(false)
+                toast.success('Pantry item added')
+            } else {
+                toast.error('Failed to add item')
             }
         } catch {
-            // Error handling
+            toast.error('Failed to add item')
         }
     }
 
@@ -209,7 +219,9 @@ function PantryContent() {
                         </label>
                         <input
                             type="number"
-                            step="0.1"
+                            inputMode="decimal"
+                            min="0.01"
+                            step="0.01"
                             value={form.quantity}
                             onChange={e => setForm({ ...form, quantity: e.target.value })}
                             placeholder="e.g. 12"
@@ -226,17 +238,10 @@ function PantryContent() {
                         <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', color: 'var(--foreground)', marginBottom: '0.3rem' }}>
                             Unit
                         </label>
-                        <input
-                            type="text"
+                        <UnitSelect
                             value={form.unit}
-                            onChange={e => setForm({ ...form, unit: e.target.value })}
-                            placeholder="e.g. pieces, cups"
-                            style={{
-                                width: '100%', border: '1px solid var(--card-border)',
-                                borderRadius: 'var(--radius-sm)', padding: '0.55rem 0.8rem',
-                                fontSize: '0.875rem', fontFamily: 'DM Sans, sans-serif',
-                                color: 'var(--foreground)', background: 'var(--background)', outline: 'none',
-                            }}
+                            onChange={v => setForm({ ...form, unit: v })}
+                            placeholder="Select unit"
                         />
                     </div>
                     <div>
@@ -261,19 +266,49 @@ function PantryContent() {
                     </div>
                     <div>
                         <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', color: 'var(--foreground)', marginBottom: '0.3rem' }}>
-                            Expiry Date
+                            Expiry Date <span style={{ color: 'var(--muted)', fontWeight: 400 }}>(optional)</span>
                         </label>
-                        <input
-                            type="date"
-                            value={form.expiryDate}
-                            onChange={e => setForm({ ...form, expiryDate: e.target.value })}
-                            style={{
-                                width: '100%', border: '1px solid var(--card-border)',
-                                borderRadius: 'var(--radius-sm)', padding: '0.55rem 0.8rem',
-                                fontSize: '0.875rem', fontFamily: 'DM Sans, sans-serif',
-                                color: 'var(--foreground)', background: 'var(--background)', outline: 'none',
-                            }}
-                        />
+                        <div style={{ position: 'relative' }}>
+                            <input
+                                type="date"
+                                value={form.expiryDate}
+                                onChange={e => setForm({ ...form, expiryDate: e.target.value })}
+                                placeholder="No expiry date"
+                                style={{
+                                    width: '100%', border: '1px solid var(--card-border)',
+                                    borderRadius: 'var(--radius-sm)', padding: '0.55rem 2rem 0.55rem 0.8rem',
+                                    fontSize: '0.875rem', fontFamily: 'DM Sans, sans-serif',
+                                    color: form.expiryDate ? 'var(--foreground)' : 'var(--muted)',
+                                    background: 'var(--background)', outline: 'none',
+                                }}
+                            />
+                            {form.expiryDate && (
+                                <button
+                                    type="button"
+                                    onClick={() => setForm({ ...form, expiryDate: '' })}
+                                    aria-label="Clear date"
+                                    title="Clear date"
+                                    style={{
+                                        position: 'absolute',
+                                        right: 6,
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        color: 'var(--muted)',
+                                        fontSize: '1rem',
+                                        lineHeight: 1,
+                                        padding: '4px 6px',
+                                        borderRadius: 'var(--radius-sm)',
+                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.color = 'var(--danger)'; e.currentTarget.style.background = 'var(--danger-light)' }}
+                                    onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.background = 'transparent' }}
+                                >
+                                    ×
+                                </button>
+                            )}
+                        </div>
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
                         <button

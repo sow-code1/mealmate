@@ -196,7 +196,10 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
                 }),
             })
             if (!res.ok) throw new Error()
-            toast.success('Logged to nutrition diary!')
+            const data = await res.json()
+            const deducted = data?.deductedCount ?? 0
+            if (deducted > 0) toast.success(`Logged! Pantry updated — ${deducted} ingredient${deducted === 1 ? '' : 's'} deducted`)
+            else toast.success('Logged to daily calories')
             setShowLogModal(false)
         } catch {
             toast.error('Failed to log meal')

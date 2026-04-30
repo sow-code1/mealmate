@@ -275,7 +275,9 @@ function NutritionContent() {
             const entry = await res.json()
             setEntries(prev => [...prev, entry])
             setShowModal(false)
-            toast.success('Logged!')
+            const deducted = entry?.deductedCount ?? 0
+            if (deducted > 0) toast.success(`Logged! Pantry updated — ${deducted} ingredient${deducted === 1 ? '' : 's'} deducted`)
+            else toast.success('Logged to daily calories')
         } catch {
             toast.error('Failed to log food')
         } finally {

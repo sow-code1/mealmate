@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import Spinner from '@/components/Spinner'
 import ImageUpload from '@/components/ImageUpload'
+import UnitSelect from '@/components/UnitSelect'
 
 const inputStyle = {
     width: '100%',
@@ -207,7 +208,9 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                         {ingredients.map((ing, i) => (
                             <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                                 <input style={{ ...inputStyle, width: 80 }} placeholder="Amt" value={ing.amount} onChange={(e) => updateIngredient(i, 'amount', e.target.value)} />
-                                <input style={{ ...inputStyle, width: 75 }} placeholder="Unit" value={ing.unit} onChange={(e) => updateIngredient(i, 'unit', e.target.value)} />
+                                <div style={{ width: 140 }}>
+                                    <UnitSelect compact value={ing.unit} onChange={(v) => updateIngredient(i, 'unit', v)} />
+                                </div>
                                 <input style={{ ...inputStyle, flex: 1 }} placeholder="Ingredient name" value={ing.name} onChange={(e) => updateIngredient(i, 'name', e.target.value)} />
                                 {ingredients.length > 1 && (
                                     <button onClick={() => setIngredients(ingredients.filter((_, idx) => idx !== i))} style={{ background: 'none', border: 'none', color: 'var(--muted)', cursor: 'pointer', fontSize: '1.1rem', padding: '0 0.25rem', lineHeight: 1 }}>×</button>

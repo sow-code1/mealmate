@@ -12,6 +12,7 @@ const recipes = [
     // ─── BREAKFAST ───────────────────────────────────────────────────
     {
         title: 'Turkish Eggs (Çılbır)',
+        imageUrl: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=1000&auto=format&fit=crop',
         description: 'Silky poached eggs on whipped garlic yogurt, finished with paprika butter. A classic Turkish breakfast.',
         category: 'Breakfast',
         prepTime: 5,
@@ -38,6 +39,7 @@ const recipes = [
     },
     {
         title: 'Japanese Tamagoyaki',
+        imageUrl: 'https://images.unsplash.com/photo-1607013251379-e6eecfffe234?q=80&w=1000&auto=format&fit=crop',
         description: 'Sweetened rolled omelette — a Japanese breakfast staple that is high in protein and ready in minutes.',
         category: 'Breakfast',
         prepTime: 5,
@@ -63,6 +65,7 @@ const recipes = [
     },
     {
         title: 'Huevos Rancheros',
+        imageUrl: 'https://images.unsplash.com/photo-1551218808-94e220e084d2?q=80&w=1000&auto=format&fit=crop',
         description: 'Mexican ranch-style eggs on crispy tortillas with smoky tomato salsa and black beans. Bold, filling, high-protein.',
         category: 'Breakfast',
         prepTime: 10,
@@ -92,6 +95,7 @@ const recipes = [
     },
     {
         title: 'High-Protein Banana Pancakes',
+        imageUrl: 'https://images.unsplash.com/photo-1565299507177-b0ac66763828?q=80&w=1000&auto=format&fit=crop',
         description: 'Two-ingredient base with protein powder and oats — fluffy, naturally sweet pancakes with 30g protein per serve.',
         category: 'Breakfast',
         prepTime: 5,
@@ -117,6 +121,7 @@ const recipes = [
     },
     {
         title: 'Smoked Salmon & Avocado Toast',
+        imageUrl: 'https://images.unsplash.com/photo-1493770348161-369560ae357d?q=80&w=1000&auto=format&fit=crop',
         description: 'Omega-3 rich smoked salmon on sourdough with creamy avocado and capers — a high-protein breakfast in under 15 minutes.',
         category: 'Breakfast',
         prepTime: 10,
@@ -146,6 +151,7 @@ const recipes = [
     // ─── LUNCH ────────────────────────────────────────────────────────
     {
         title: 'Thai Larb Gai',
+        imageUrl: 'https://images.unsplash.com/photo-1559847844-5315695dadae?q=80&w=1000&auto=format&fit=crop',
         description: 'Bright, herby Thai minced chicken salad with toasted rice powder and lime. Served at room temperature — great for meal prep.',
         category: 'Lunch',
         prepTime: 15,
@@ -174,6 +180,7 @@ const recipes = [
     },
     {
         title: 'Korean Bibimbap',
+        imageUrl: 'https://images.unsplash.com/photo-1553163147-622ab57be1c7?q=80&w=1000&auto=format&fit=crop',
         description: 'Vibrant Korean rice bowl topped with seasoned vegetables, spiced beef, a fried egg, and gochujang sauce.',
         category: 'Lunch',
         prepTime: 20,
@@ -203,6 +210,7 @@ const recipes = [
     },
     {
         title: 'Greek Chicken Souvlaki Wraps',
+        imageUrl: 'https://images.unsplash.com/photo-1593504049359-74330189a345?q=80&w=1000&auto=format&fit=crop',
         description: 'Lemon-herb marinated chicken on warm pita with tzatziki, tomato, and onion — a high-protein Mediterranean classic.',
         category: 'Lunch',
         prepTime: 15,
@@ -232,6 +240,7 @@ const recipes = [
     },
     {
         title: 'Vietnamese Beef Pho',
+        imageUrl: 'https://images.unsplash.com/photo-1583224944844-5b268c057b72?q=80&w=1000&auto=format&fit=crop',
         description: 'Aromatic spiced beef broth with rice noodles, thin-sliced sirloin, and fresh herbs. Comfort in a bowl.',
         category: 'Lunch',
         prepTime: 20,
@@ -261,6 +270,7 @@ const recipes = [
     },
     {
         title: 'Turkish Red Lentil Soup',
+        imageUrl: 'https://images.unsplash.com/photo-1547592180-85f173990554?q=80&w=1000&auto=format&fit=crop',
         description: 'Silky, warmly spiced red lentil soup (mercimek çorbası) with a paprika butter finish. Vegan, cheap, and protein-rich.',
         category: 'Lunch',
         prepTime: 10,
@@ -292,6 +302,7 @@ const recipes = [
     // ─── DINNER ──────────────────────────────────────────────────────
     {
         title: 'Moroccan Chicken Tagine',
+        imageUrl: 'https://images.unsplash.com/photo-1602253057119-44d745d9b860?q=80&w=1000&auto=format&fit=crop',
         description: 'Slow-braised chicken with preserved lemon, olives, and ras el hanout. Fragrant North African comfort food.',
         category: 'Dinner',
         prepTime: 15,
@@ -322,6 +333,7 @@ const recipes = [
     },
     {
         title: 'Butter Chicken (Murgh Makhani)',
+        imageUrl: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?q=80&w=1000&auto=format&fit=crop',
         description: 'Tender chicken in a creamy tomato-butter sauce spiced with garam masala and ginger. The definitive Indian comfort dish.',
         category: 'Dinner',
         prepTime: 20,
@@ -352,6 +364,7 @@ const recipes = [
     },
     {
         title: 'Spanish Chicken Paella',
+        imageUrl: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?q=80&w=1000&auto=format&fit=crop',
         description: 'Saffron-scented rice with golden chicken and sweet peppers, cooked in one pan for a true Spanish feast.',
         category: 'Dinner',
         prepTime: 15,
@@ -382,6 +395,7 @@ const recipes = [
     },
     {
         title: 'Teriyaki Salmon',
+        imageUrl: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?q=80&w=1000&auto=format&fit=crop',
         description: 'Caramelised teriyaki-glazed salmon ready in 20 minutes — sticky, sweet, and packed with omega-3.',
         category: 'Dinner',
         prepTime: 5,
@@ -409,6 +423,7 @@ const recipes = [
     },
     {
         title: 'Kung Pao Chicken',
+        imageUrl: 'https://images.unsplash.com/photo-1525755662778-989d0524087e?q=80&w=1000&auto=format&fit=crop',
         description: 'Sichuan-style stir-fry with tender chicken, crunchy peanuts, and dried chilies in a tangy-spicy sauce.',
         category: 'Dinner',
         prepTime: 15,
@@ -439,6 +454,7 @@ const recipes = [
     },
     {
         title: 'Lebanese Kafta with Bulgur',
+        imageUrl: 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?q=80&w=1000&auto=format&fit=crop',
         description: 'Spiced ground beef kafta skewers with fluffy bulgur pilaf and yogurt sauce — high-protein Middle Eastern dinner.',
         category: 'Dinner',
         prepTime: 20,
@@ -468,6 +484,7 @@ const recipes = [
     },
     {
         title: 'Italian Chicken Piccata',
+        imageUrl: 'https://images.unsplash.com/photo-1546964124-0cce460f38ef?q=80&w=1000&auto=format&fit=crop',
         description: 'Pan-fried chicken in a bright lemon-caper butter sauce. An Italian restaurant classic that takes 30 minutes.',
         category: 'Dinner',
         prepTime: 10,
@@ -499,6 +516,7 @@ const recipes = [
     // ─── SNACK ───────────────────────────────────────────────────────
     {
         title: 'High-Protein Hummus',
+        imageUrl: 'https://images.unsplash.com/photo-1571197119282-7c4e2c39c2d3?q=80&w=1000&auto=format&fit=crop',
         description: 'Extra-smooth hummus boosted with an additional can of chickpeas for double the protein. Perfect for meal prep.',
         category: 'Snack',
         prepTime: 10,
@@ -526,6 +544,7 @@ const recipes = [
     },
     {
         title: 'Cottage Cheese & Berry Bowl',
+        imageUrl: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=1000&auto=format&fit=crop',
         description: 'High-protein cottage cheese with fresh berries, walnuts, and honey — a quick snack with 20g of protein.',
         category: 'Snack',
         prepTime: 5,
@@ -549,6 +568,7 @@ const recipes = [
     },
     {
         title: 'Turkey & Cheese Roll-Ups',
+        imageUrl: 'https://images.unsplash.com/photo-1593253787226-39d4ad17be5a?q=80&w=1000&auto=format&fit=crop',
         description: 'No-cook high-protein snack — turkey slices wrapped around cream cheese, cucumber, and bell pepper. Great for on the go.',
         category: 'Snack',
         prepTime: 5,
@@ -573,6 +593,7 @@ const recipes = [
     },
     {
         title: 'Edamame with Sea Salt & Chili',
+        imageUrl: 'https://images.unsplash.com/photo-1607301406259-dfb186e15de8?q=80&w=1000&auto=format&fit=crop',
         description: 'Steamed edamame tossed with sea salt, chili flakes, and sesame oil. A Japanese high-protein snack in under 10 minutes.',
         category: 'Snack',
         prepTime: 2,
@@ -598,6 +619,7 @@ const recipes = [
     // ─── DESSERT ────────────────────────────────────────────────────
     {
         title: 'Protein Chocolate Mousse',
+        imageUrl: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=1000&auto=format&fit=crop',
         description: 'Thick, airy chocolate mousse made with Greek yogurt and chocolate protein powder. Under 200 calories and 25g protein.',
         category: 'Dessert',
         prepTime: 10,
@@ -622,6 +644,7 @@ const recipes = [
     },
     {
         title: 'Greek Yogurt Bark with Berries',
+        imageUrl: 'https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?q=80&w=1000&auto=format&fit=crop',
         description: 'Frozen yogurt bark layered with honey, mixed berries, and granola — a high-protein dessert that keeps in the freezer for a week.',
         category: 'Dessert',
         prepTime: 10,
@@ -647,6 +670,7 @@ const recipes = [
     },
     {
         title: 'Peanut Butter Banana Nice Cream',
+        imageUrl: 'https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?q=80&w=1000&auto=format&fit=crop',
         description: 'Creamy one-ingredient banana ice cream blended with peanut butter and vanilla protein — vegan, high-protein, no added sugar.',
         category: 'Dessert',
         prepTime: 5,
@@ -670,6 +694,7 @@ const recipes = [
     },
     {
         title: 'Ricotta Lemon Cheesecake Cups',
+        imageUrl: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=1000&auto=format&fit=crop',
         description: 'Light, no-bake lemon ricotta dessert cups with a crunchy biscuit base — high-protein, refreshing, and ready in 15 minutes.',
         category: 'Dessert',
         prepTime: 15,
@@ -709,6 +734,7 @@ async function main() {
                 cookTime: recipe.cookTime,
                 servings: recipe.servings,
                 tags: recipe.tags,
+                imageUrl: recipe.imageUrl,
                 isPublic: true,
                 // userId omitted → defaults to null, making these presets
                 ingredients: { create: recipe.ingredients },

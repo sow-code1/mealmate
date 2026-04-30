@@ -1,6 +1,19 @@
 export const dynamic = 'force-dynamic'
 
+import type { Metadata } from 'next'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+    title: 'Recipe Library',
+    description: 'Browse, save, and organize your recipes with auto-calculated nutrition, dietary tags, and category filters.',
+    alternates: { canonical: '/recipes' },
+    openGraph: {
+        title: 'Recipe Library | Caloracle',
+        description: 'Browse, save, and organize your recipes with nutrition data.',
+        type: 'website',
+        url: '/recipes',
+    },
+}
 import { prisma } from '@/lib/prisma'
 import RecipesBrowser from '@/components/RecipesBrowser'
 import { auth } from '@/auth'
